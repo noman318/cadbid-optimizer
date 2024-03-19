@@ -22,7 +22,7 @@ const Header = () => {
         <Button className="mr-2">
           <IoSettingsSharp /> Settings
         </Button>
-        <Button className="mr-2">Sign IN</Button>
+        <Button className="mr-2">Sign In</Button>
       </div>
     </header>
   );
