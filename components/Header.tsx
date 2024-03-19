@@ -12,7 +12,7 @@ const Header = () => {
         <h1 className=" text-xl font-semibold text-white">Cutlist Optimizer</h1>
       </div>
       <div className="mx-2">
-        <Button className="mr-2 bg-green-600">
+        <Button className="mr-2 bg-green-600 hover:bg-green-500 transition-colors duration-300">
           <FaPlay /> Calculate
         </Button>
         <Button className="mr-2">

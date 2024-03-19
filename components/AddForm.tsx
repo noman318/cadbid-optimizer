@@ -93,7 +93,7 @@ const AddForm = ({ title, icon }: Props) => {
               </FormItem>
             )}
           />
-          <Button type="submit">Save</Button>
+          <Button type="submit" size={"sm"}>Save</Button>
         </form>
       </Form>
     </section>
