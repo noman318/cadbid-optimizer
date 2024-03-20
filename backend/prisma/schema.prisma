@@ -13,20 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Panel{
-  id String @id @default(uuid())
-  length Int @default(0)
-  width Int @default(0)
-  qty Int @default(0)
+model Panel {
+  id     String @id @default(uuid())
+  panelLength Int    @default(0) @map("length")
+  panelWidth  Int    @default(0) @map("width")
+  panelQty    Int    @default(0) @map("qty")
+
+  // Define a one-to-one relationship with Stock_Sheets
+  stockSheet Stock_Sheets @relation(fields: [stockSheetId], references: [id])
+  // Add a foreign key field
+  stockSheetId String @unique
 
   @@map("panels")
 }
 
-model Stock_Sheets{
-  id String @id @default(uuid())
-  length Int @default(0)
-  width Int @default(0)
-  qty Int @default(0)
+model Stock_Sheets {
+  id     String  @id @default(uuid())
+  length Int     @default(0)
+  width  Int     @default(0)
+  qty    Int     @default(0)
+
+  // panelId will be a type from Panel
+  panelId  Panel?
 
   @@map("stock_sheets")
 }
