@@ -2,7 +2,9 @@ import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import PanelRoutes from "./routes/panel.route";
-import StockSheetRoutes from "./routes/stocks.route"
+import StockSheetRoutes from "./routes/stocks.route";
+import UserRoutes from "./routes/user.route";
+import SettingsRoutes from "./routes/settings.route";
 
 dotenv.config();
 const app = express();
@@ -18,7 +20,9 @@ const PORT = Number(process.env.PORT) || 5000;
 
 // adding routing middleware
 app.use("/panel", PanelRoutes);
-app.use("/stock-sheets",StockSheetRoutes)
+app.use("/stock-sheets", StockSheetRoutes);
+app.use("/users", UserRoutes);
+app.use("/settings", SettingsRoutes);
 
 //@ Testing root route
 app.get("/ping", (req: Request, res: Response): void => {

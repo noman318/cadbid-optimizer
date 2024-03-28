@@ -1,0 +1,18 @@
+Layout: 0 
+Used 1 sheets with length=1800, width=1000 
+Count of placed parts: 6 
+Part 0: X=0; Y=0; Length=600; Width=450; 
+Part 1: X=450; Y=0; Length=600; Width=450; 
+Part 2: X=0; Y=600; Length=600; Width=450; 
+Part3: X=450; Y=600; Length=600; Width=450; 
+Part 4: X=0; Y=1200; Length=600; Width=450; 
+Part 5: X=450; Y=1200; Length=600; Width=450; 
+Waste Part 0: X=900; Y=0; Length=1800; Width=100 
+Layout.: 1 
+Used 5 sheets with length=1800, width=1000 
+Count of placed parts: 2 
+Part 0: X=0; Y=0; Length=800; Width=600; 
+Part 1: X=0; Y=800; Length=800; Width=600; 
+Waste Part 0: X=600; Y=0; Length=1800; Width=400 
+Waste Part 1: X=0; Y=1600; Length=200; Width=600 
+

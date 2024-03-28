@@ -27,6 +27,26 @@ model Panel {
   @@map("panels")
 }
 
+model User{
+  id String @id @default(uuid())
+  name String
+  userName String
+  settingId Settings?
+}
+
+model Settings {
+  id String @id @default(uuid())
+  trimLeft Int
+  trimRight Int
+  trimTop Int
+  trimBottom Int
+  bladeWidth Int
+  minimizeLayoutNumber Boolean
+  minimizeSheetRotation Boolean
+  userId String @unique
+  user User @relation(fields: [userId],references: [id])
+}
+
 model Stock_Sheets {
   id     String  @id @default(uuid())
   length Int     @default(0)
