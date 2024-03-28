@@ -28,6 +28,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "./ui/checkbox";
+import {
+  useCreateSettingMutation,
+  useGetSingleSettingsQuery,
+} from "@/lib/slices/settingSlice";
 
 const formSchema = z.object({
   trimLeft: z.string(),
@@ -37,9 +41,14 @@ const formSchema = z.object({
   bladeWidth: z.string(),
   minimizeLayoutNumber: z.boolean(),
   minimizeSheetRotation: z.boolean(),
-  userId: z.string().min(8).max(30),
+  userId: z.string().min(8).max(80),
 });
 const Header = () => {
+  const [createSetting, { data, isLoading, isError }] =
+    useCreateSettingMutation();
+
+  const [settings, { data: settingData }] = useCreateSettingMutation();
+  // console.log("settingData", settingData);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,19 +62,17 @@ const Header = () => {
       userId: "",
     },
   });
-  interface FormValues {
-    trimLeft: string;
-    trimRight: string;
-    trimTop: string;
-    trimBottom: string;
-    bladeWidth: string;
-    minimizeLayoutNumber: boolean;
-    minimizeSheetRotation: boolean;
-    userId: string;
-  }
-  function onSubmit(values: z.infer<typeof formSchema>) {
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     // ✅ This will be type-safe and validated.
     console.log("values", values);
+    try {
+      await createSetting(values).unwrap();
+      alert("Created setting");
+    } catch (error: any) {
+      console.log("error", error);
+      alert(`${error} error`);
+    }
   }
   return (
     <header className="flex items-center justify-between w-full p-2 bg-slate-900">
@@ -91,6 +98,11 @@ const Header = () => {
             <DialogHeader>
               <DialogTitle>Add Settings</DialogTitle>
             </DialogHeader>
+            {isError ? (
+              <h1 className="text-red-600">Something Went wrong</h1>
+            ) : (
+              <></>
+            )}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -235,7 +247,9 @@ const Header = () => {
                   />
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Save changes</Button>
+                  <Button type="submit" disabled={isLoading}>
+                    Save changes
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -249,20 +263,3 @@ const Header = () => {
 };
 
 export default Header;
-
-// <FormField
-// control={form.control}
-// name="minimizeSheetRotation"
-// render={({ field }) => (
-//   <FormItem>
-//     <FormLabel>Length</FormLabel>
-//     <FormControl>
-//       <Checkbox
-//         checked={field.value}
-//         onCheckedChange={field.onChange}
-//       />{" "}
-//     </FormControl>
-//     <FormMessage />
-//   </FormItem>
-// )}
-// />
