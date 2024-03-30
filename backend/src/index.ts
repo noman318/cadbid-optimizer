@@ -5,6 +5,7 @@ import PanelRoutes from "./routes/panel.route";
 import StockSheetRoutes from "./routes/stocks.route";
 import UserRoutes from "./routes/user.route";
 import SettingsRoutes from "./routes/settings.route";
+import session from "express-session";
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,14 @@ app.use(
     methods: "GET,PUT,PATCH,POST,DELETE",
   })
 );
+app.use(
+  session({
+    secret: "Noman123",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
 const PORT = Number(process.env.PORT) || 5000;
 
 // adding routing middleware

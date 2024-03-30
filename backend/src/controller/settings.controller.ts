@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prismaClient } from "../utils/db";
+import { prisma } from "../utils/db";
 
 const testSettingsController = (req: Request, res: Response) => {
   res.json({ message: "Settings controller is working" });
@@ -19,7 +19,7 @@ const createSetting = async (req: Request, res: Response) => {
       userId,
     } = req.body;
 
-    const settings = await prismaClient.settings.create({
+    const settings = await prisma.settings.create({
       data: {
         trimLeft: typeof trimLeft === "string" ? Number(trimLeft) : trimLeft,
         trimRight:
@@ -52,7 +52,7 @@ const createSetting = async (req: Request, res: Response) => {
 
 const getSettings = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const settingData = await prismaClient.settings.findUnique({
+  const settingData = await prisma.settings.findUnique({
     where: { id },
     include: { user: true },
   });
@@ -60,7 +60,7 @@ const getSettings = async (req: Request, res: Response) => {
 };
 
 const getAllSettings = async (req: Request, res: Response) => {
-  const allSettings = await prismaClient.settings.findMany({
+  const allSettings = await prisma.settings.findMany({
     include: { user: true },
   });
   res.json(allSettings);

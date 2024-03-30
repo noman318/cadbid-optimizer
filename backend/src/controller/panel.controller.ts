@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { prismaClient } from "../utils/db";
+import { prisma } from "../utils/db";
 
 // Testing Panel controller
 
@@ -12,20 +12,27 @@ const testPanelController = async (req: Request, res: Response) => {
 const createPanel = async (req: Request, res: Response, next: NextFunction) => {
   // console.log("calling Create");
   console.log("req.body", req.body);
-  const { length, width, qty, stockSheet:stockSheetData, panelLength, panelWidth, panelQty } =
-    req.body;
+  const {
+    length,
+    width,
+    qty,
+    stockSheet: stockSheetData,
+    panelLength,
+    panelWidth,
+    panelQty,
+  } = req.body;
   try {
     // Create the stock sheet
-    const stockSheet = await prismaClient.stock_Sheets.create({
+    const stockSheet = await prisma.stock_Sheets.create({
       data: {
         length,
         width,
         qty,
       },
     });
-console.log('stockSheet', stockSheet)
+    console.log("stockSheet", stockSheet);
     // Create the panel and connect it to the created stock sheet
-    const panel = await prismaClient.panel.create({
+    const panel = await prisma.panel.create({
       data: {
         panelLength,
         panelWidth,
@@ -35,7 +42,7 @@ console.log('stockSheet', stockSheet)
         },
       },
     });
-console.log('panel', panel)
+    console.log("panel", panel);
     // Return both the created stock sheet and panel
     res.json({ stockSheet, panel });
   } catch (error) {

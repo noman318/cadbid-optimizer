@@ -47,6 +47,28 @@ model Settings {
   user User @relation(fields: [userId],references: [id])
 }
 
+model memailuser {
+  nEmailUserID   Int      @id@db.UnsignedInt
+  sEmail         String    @unique(map: "memailuser_sEmail_key") @db.VarChar(255)
+  sPassword      String    @db.VarChar(255)
+  sFullName      String    @db.VarChar(200)
+  dtExpiry       String    @db.VarChar(11)
+  bSentReminder1 Int       @db.UnsignedTinyInt
+  bSentReminder2 Int       @db.UnsignedTinyInt
+  bSentReminder3 Int       @db.UnsignedTinyInt
+  sComanyName    String    @db.VarChar(100)
+  sContactNo     String    @db.VarChar(50)
+  sPythaDongalNo String    @db.VarChar(50)
+  bApproved      Int       @db.TinyInt
+  bActive        Int       @default(0) @db.UnsignedTinyInt
+  bEmailVerified Int       @default(0) @db.TinyInt
+  trial          Int       @default(0) @db.TinyInt
+  bFixed         Int?      @default(0) @db.TinyInt
+  dtCreated      DateTime? @db.DateTime(0)
+  dtModified     DateTime? @db.DateTime(0)
+}
+
+
 model Stock_Sheets {
   id     String  @id @default(uuid())
   length Int     @default(0)
