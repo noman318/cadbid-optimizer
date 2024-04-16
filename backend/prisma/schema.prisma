@@ -15,7 +15,7 @@ datasource db {
 
 model Panel {
   id          String @id @default(uuid())
-  panelName        String @default("") @map("name")
+  panelName   String @default("") @map("name")
   panelLength Int    @default(0) @map("length")
   panelWidth  Int    @default(0) @map("width")
   panelQty    Int    @default(0) @map("qty")
@@ -32,13 +32,18 @@ model User {
 
 model Settings {
   id                    String  @id @default(uuid())
-  trimLeft              Int
-  trimRight             Int
-  trimTop               Int
-  trimBottom            Int
-  bladeWidth            Int
-  minimizeLayoutNumber  Boolean
-  minimizeSheetRotation Boolean
+  nSawKerfValue         Int     @default(0)
+  nMinWasteSize         Int     @default(0)
+  nLeftTrim             Int     @default(0)
+  nRightTrim            Int     @default(0)
+  nBottomTrim           Int     @default(0)
+  nTopTrim              Int     @default(0)
+  nCuttingComplexity    Int
+  nMaxLayoutSize        Int     @default(0)
+  bCuttingLayoutMin     Boolean
+  bMinmizePanelRotation Boolean
+  bCutDirection         Boolean
+  bRollMode             Boolean
   userId                String  @unique
   user                  User    @relation(fields: [userId], references: [id])
 }

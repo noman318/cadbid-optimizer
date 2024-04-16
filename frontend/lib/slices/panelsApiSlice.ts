@@ -5,12 +5,12 @@ export const panelsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createPanel: builder.mutation({
       query: (data) => ({
-        url: `${PANEL_URL}/create`,
+        url: `${PANEL_URL}`,
         body: data,
         method: "POST",
       }),
     }),
-    uploadCsv: builder.mutation({
+    uploadPanelCsv: builder.mutation({
       query: (data) => ({
         url: `${PANEL_URL}/upload`,
         body: data,
@@ -20,4 +20,5 @@ export const panelsApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useCreatePanelMutation, useUploadCsvMutation } = panelsApiSlice;
+export const { useCreatePanelMutation, useUploadPanelCsvMutation } =
+  panelsApiSlice;

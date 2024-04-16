@@ -6,37 +6,61 @@ const testSettingsController = (req: Request, res: Response) => {
 };
 
 const createSetting = async (req: Request, res: Response) => {
-  //   console.log("req.body", req.body);
+  // console.log("req.body", req.body);
   try {
     const {
-      trimLeft,
-      trimRight,
-      trimTop,
-      trimBottom,
-      bladeWidth,
-      minimizeLayoutNumber,
-      minimizeSheetRotation,
+      nLeftTrim,
+      nRightTrim,
+      nBottomTrim,
+      nTopTrim,
+      nSawKerfValue,
+      bMinmizePanelRotation,
+      bCuttingLayoutMin,
+      nCuttingComplexity,
+      nMaxLayoutSize,
       userId,
+      bCutDirection,
+      bRollMode,
     } = req.body;
 
     const settings = await prisma.settings.create({
       data: {
-        trimLeft: typeof trimLeft === "string" ? Number(trimLeft) : trimLeft,
-        trimRight:
-          typeof trimRight === "string" ? Number(trimRight) : trimRight,
-        trimTop: typeof trimTop === "string" ? Number(trimTop) : trimTop,
-        trimBottom:
-          typeof trimBottom === "string" ? Number(trimBottom) : trimBottom,
-        bladeWidth:
-          typeof bladeWidth === "string" ? Number(bladeWidth) : bladeWidth,
-        minimizeLayoutNumber:
-          typeof minimizeLayoutNumber === "string"
-            ? minimizeLayoutNumber.toLowerCase() === "true"
-            : minimizeLayoutNumber,
-        minimizeSheetRotation:
-          typeof minimizeSheetRotation === "string"
-            ? minimizeSheetRotation.toLowerCase() === "true"
-            : minimizeSheetRotation,
+        nLeftTrim:
+          typeof nLeftTrim === "string" ? Number(nLeftTrim) : nLeftTrim,
+        nRightTrim:
+          typeof nRightTrim === "string" ? Number(nRightTrim) : nRightTrim,
+        nBottomTrim:
+          typeof nBottomTrim === "string" ? Number(nBottomTrim) : nBottomTrim,
+        nTopTrim: typeof nTopTrim === "string" ? Number(nTopTrim) : nTopTrim,
+        nSawKerfValue:
+          typeof nSawKerfValue === "string"
+            ? Number(nSawKerfValue)
+            : nSawKerfValue,
+
+        nCuttingComplexity:
+          typeof nCuttingComplexity === "string"
+            ? Number(nCuttingComplexity)
+            : nCuttingComplexity,
+        nMaxLayoutSize:
+          typeof nMaxLayoutSize === "string"
+            ? Number(nMaxLayoutSize)
+            : nMaxLayoutSize,
+        bCuttingLayoutMin:
+          typeof bCuttingLayoutMin === "string"
+            ? bCuttingLayoutMin.toLowerCase() === "true"
+            : bCuttingLayoutMin,
+        bMinmizePanelRotation:
+          typeof bMinmizePanelRotation === "string"
+            ? bMinmizePanelRotation.toLowerCase() === "true"
+            : bMinmizePanelRotation,
+        bCutDirection:
+          typeof bCutDirection === "string"
+            ? bCutDirection.toLowerCase() === "true"
+            : bCutDirection,
+        bRollMode:
+          typeof bRollMode === "string"
+            ? bRollMode.toLowerCase() === "true"
+            : bRollMode,
         userId,
       },
     });

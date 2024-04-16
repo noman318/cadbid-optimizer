@@ -5,12 +5,12 @@ export const stocksApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createStock: builder.mutation({
       query: (data) => ({
-        url: `${STOCK_SHEETS_URL}/create`,
+        url: `${STOCK_SHEETS_URL}`,
         body: data,
         method: "POST",
       }),
     }),
-    uploadCsv: builder.mutation({
+    uploadStocksCsv: builder.mutation({
       query: (data) => ({
         url: `${STOCK_SHEETS_URL}/upload`,
         body: data,
@@ -20,4 +20,5 @@ export const stocksApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useCreateStockMutation, useUploadCsvMutation } = stocksApiSlice;
+export const { useCreateStockMutation, useUploadStocksCsvMutation } =
+  stocksApiSlice;

@@ -34,6 +34,7 @@ const createStocksSheets = async (
 const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
   // console.log("req", req.file);
   // res.send("running");
+  console.log("req.file", req.file);
   const file = req?.file?.path;
   console.log("file", file);
   try {
