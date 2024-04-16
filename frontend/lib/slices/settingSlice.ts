@@ -5,7 +5,7 @@ export const settingApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     createSetting: builder.mutation({
       query: (data) => ({
-        url: `${SETTINGS_URL}/create`,
+        url: `${SETTINGS_URL}`,
         body: data,
         method: "POST",
       }),
