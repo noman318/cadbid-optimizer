@@ -30,7 +30,7 @@ const createPanel = async (req: Request, res: Response, next: NextFunction) => {
         qty,
       },
     });
-    console.log("stockSheet", stockSheet);
+    // console.log("stockSheet", stockSheet);
     // Create the panel and connect it to the created stock sheet
     const panel = await prisma.panel.create({
       data: {
@@ -42,7 +42,7 @@ const createPanel = async (req: Request, res: Response, next: NextFunction) => {
         },
       },
     });
-    console.log("panel", panel);
+    // console.log("panel", panel);
     // Return both the created stock sheet and panel
     res.json({ stockSheet, panel });
   } catch (error) {

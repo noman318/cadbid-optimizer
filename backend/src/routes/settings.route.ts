@@ -3,8 +3,10 @@ import settingsController from "../controller/settings.controller";
 
 const router = Router();
 
-router.post("/create", settingsController.createSetting);
-router.get("/all", settingsController.getAllSettings);
-router.get("/:id", settingsController.getSettings);
+router
+  .route("/")
+  .get(settingsController.getAllSettings)
+  .post(settingsController.createSetting);
+router.route("/:id").get(settingsController.getSettings);
 
 export default router;

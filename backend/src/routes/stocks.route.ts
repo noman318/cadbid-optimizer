@@ -3,7 +3,10 @@ import StockSheetController from "../controller/stocks.controller";
 
 const router = Router();
 
-router.get("/", StockSheetController.testStocksController);
-router.post("/create", StockSheetController.createStocksSheets);
+router
+  .route("/")
+  .get(StockSheetController.testStocksController)
+  .post(StockSheetController.createStocksSheets);
+// router.post("/create");
 
 export default router;
