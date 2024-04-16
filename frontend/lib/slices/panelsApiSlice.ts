@@ -10,7 +10,14 @@ export const panelsApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
+    uploadCsv: builder.mutation({
+      query: (data) => ({
+        url: `${PANEL_URL}/upload`,
+        body: data,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
-export const { useCreatePanelMutation } = panelsApiSlice;
+export const { useCreatePanelMutation, useUploadCsvMutation } = panelsApiSlice;

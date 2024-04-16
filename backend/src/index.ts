@@ -6,11 +6,13 @@ import StockSheetRoutes from "./routes/stocks.route";
 import UserRoutes from "./routes/user.route";
 import SettingsRoutes from "./routes/settings.route";
 import session from "express-session";
+import path from "path";
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.resolve(__dirname, "public")));
 app.use(
   cors({
     origin: "http://localhost:3000",

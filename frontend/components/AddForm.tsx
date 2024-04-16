@@ -68,7 +68,7 @@ const AddForm = () => {
       //   width: "",
       //   qty: "",
       // }),
-        console.log("newData", newData);
+      console.log("newData", newData);
     } catch (error) {
       console.log("error", error);
     }
@@ -122,7 +122,7 @@ const AddForm = () => {
               </FormItem>
             )}
           />
-          <div style={{marginTop:"25%"}}>
+          <div style={{ marginTop: "25%" }}>
             <h1 className="text-xl font-bold flex items-center gap-2 mb-4">
               <BsStack />
               {"Stock Sheets"}
@@ -161,6 +161,18 @@ const AddForm = () => {
                   <FormLabel>Quantity</FormLabel>
                   <FormControl>
                     <Input placeholder="Quantity" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Quantity" type="file" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
