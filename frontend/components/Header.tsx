@@ -75,7 +75,7 @@ const Header = () => {
     }
   }
   return (
-    <header className="flex items-center justify-between w-full p-2 bg-slate-900">
+    <header className="flex items-center justify-between w-full p-2 bg-slate-900 sticky top-0">
       <div className=" flex items-center gap-2">
         <MdDashboard color="white" size={"30px"} />
         <h1 className=" text-xl font-semibold text-white">Cutlist Optimizer</h1>
