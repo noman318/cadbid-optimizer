@@ -40,14 +40,12 @@ const CustomTable = ({
     console.log("id", id);
 
     if (type === "panel") {
-      const res = await deletePanel(id).unwrap();
-      console.log("res", res);
+      await deletePanel(id).unwrap();
       alert("Panel Deleted");
       fetch();
       return;
     } else if (type === "stocks") {
-      const res = await deleteStock(id).unwrap();
-      console.log("res", res);
+      await deleteStock(id).unwrap();
       alert("Stock Sheet Deleted");
       fetch();
       return;

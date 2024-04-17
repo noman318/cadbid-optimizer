@@ -15,12 +15,14 @@ const PanelTable = () => {
           <Loader />
         </>
       ) : (
-        <CustomTable
-          tableHead={panelHead}
-          tableData={data}
-          type={"panel"}
-          fetch={refetch}
-        />
+        <div aria-label="parent_table" className="-z-10">
+          <CustomTable
+            tableHead={panelHead}
+            tableData={data}
+            type={"panel"}
+            fetch={refetch}
+          />
+        </div>
       )}
     </React.Fragment>
   );
