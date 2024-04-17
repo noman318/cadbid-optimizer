@@ -14,7 +14,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useCreatePanelMutation } from "@/lib/slices/panelsApiSlice";
+import {
+  useCreatePanelMutation,
+  useUploadPanelCsvMutation,
+} from "@/lib/slices/panelsApiSlice";
 import {
   useCreateStockMutation,
   useUploadStocksCsvMutation,
@@ -46,6 +49,9 @@ const AddForm = ({ title, icon, type }: Props) => {
   const [files, setFiles] = useState<File | null>(null);
   const [uploadStockCSV, { isLoading: uploadLoading }] =
     useUploadStocksCsvMutation();
+
+  const [uploadPanelCSV, { isLoading: panelCsvLoading }] =
+    useUploadPanelCsvMutation();
   // console.log("createData", createData);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,14 +85,23 @@ const AddForm = ({ title, icon, type }: Props) => {
     // console.log("type", type);
 
     try {
-      await createPanel(updatedData).unwrap();
-
-      // form.reset({
-      //   length: "",
-      //   width: "",
-      //   qty: "",
-      // }),
-      alert("created panel");
+      if (type === "panel") {
+        await createPanel(updatedData).unwrap();
+        alert("created panel");
+        return;
+      } else if (type === "stock") {
+        await createStock(updatedData).unwrap();
+        alert("created stocks");
+        return;
+      } else {
+        alert("Provide Proper Type");
+      }
+      form.reset({
+        length: "",
+        width: "",
+        qty: "",
+        name: "",
+      });
     } catch (error) {
       console.log("error", error);
     }
@@ -98,9 +113,17 @@ const AddForm = ({ title, icon, type }: Props) => {
     try {
       const formData = new FormData();
       files && formData.append("file", files);
-      const res = await uploadStockCSV(formData).unwrap();
-      console.log("res", res);
-      alert("Uploaded");
+      if (type === "panel") {
+        await uploadPanelCSV(formData).unwrap();
+        alert("Uploaded Panel CSV");
+        return;
+      } else if (type === "stock") {
+        await uploadStockCSV(formData).unwrap();
+        alert("Uploaded Stock CSV");
+        return;
+      } else {
+        alert("Provide Proper Type");
+      }
 
       // const response = await fetch(
       //   "http://localhost:5000/stock-sheets/upload",
@@ -119,6 +142,9 @@ const AddForm = ({ title, icon, type }: Props) => {
       //   console.error("Error uploading CSV:", responseData);
       //   alert("Failed to upload CSV");
       // }
+      form.reset({
+        file_input: "",
+      });
     } catch (error) {
       console.error("Error uploading CSV:", error);
       alert("Failed to upload CSV");
@@ -127,10 +153,6 @@ const AddForm = ({ title, icon, type }: Props) => {
 
   return (
     <section>
-      <h1 className="text-xl font-bold flex items-center gap-2 mb-4">
-        {/* <TfiLayoutSliderAlt />
-        {"Panels"} */}
-      </h1>
       {isError ? <h1 className="text-red-600">Something Went wrong</h1> : <></>}
       {/* <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
