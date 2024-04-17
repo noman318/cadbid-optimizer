@@ -6,12 +6,13 @@ const router = Router();
 
 router
   .route("/")
-  .get(StockSheetController.testStocksController)
+  .get(StockSheetController.getAllStockSheets)
   .post(StockSheetController.createStocksSheets);
 
 router
   .route("/upload")
   .post(upload.single("file"), StockSheetController.uploadCsv);
 // router.post("/create");
+router.route("/:id").get(StockSheetController.getSingleStockData);
 
 export default router;

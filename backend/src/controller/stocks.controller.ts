@@ -8,6 +8,42 @@ const testStocksController = async (req: Request, res: Response) => {
   res.json({ message: "Stock Controller Running" });
 };
 
+// Get all stocks sheets
+
+const getAllStockSheets = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const stockSheets = await prisma.stock_Sheets.findMany({});
+    return res.json(stockSheets);
+  } catch (error) {
+    console.log("error", error);
+    next(error);
+  }
+};
+
+const getSingleStockData = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  try {
+    const stockSheet = await prisma.stock_Sheets.findUnique({
+      where: { id },
+    });
+    if (!stockSheet) {
+      throw new Error("No stock sheeet with given ID found");
+    }
+    res.json(stockSheet);
+  } catch (error) {
+    console.log("error", error);
+    next(error);
+  }
+};
+
 // Create a Stock Sheets POST REQUEST
 
 const createStocksSheets = async (
@@ -63,4 +99,10 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { createStocksSheets, testStocksController, uploadCsv };
+export default {
+  createStocksSheets,
+  testStocksController,
+  uploadCsv,
+  getAllStockSheets,
+  getSingleStockData,
+};

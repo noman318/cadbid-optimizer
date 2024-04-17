@@ -8,6 +8,43 @@ const testPanelController = async (req: Request, res: Response) => {
   res.json({ message: "Panel Controller Running" });
 };
 
+// Get all Panels that have been uploaded
+
+const getAllPanels = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const panels = await prisma.panel.findMany({});
+    // console.log("panels", panels);
+    return res.json(panels);
+  } catch (error) {
+    console.log("error", error);
+    next(error);
+  }
+};
+
+const getSinglePanel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  try {
+    const panel = await prisma.panel.findUnique({
+      where: { id },
+    });
+    if (!panel) {
+      throw new Error("No Panel with given ID found");
+    }
+    res.json(panel);
+  } catch (error) {
+    console.log("error", error);
+    next(error);
+  }
+};
+
 // Create a panel POST REQUEST
 
 const createPanel = async (req: Request, res: Response, next: NextFunction) => {
@@ -77,4 +114,10 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { createPanel, testPanelController, uploadCsv };
+export default {
+  createPanel,
+  testPanelController,
+  uploadCsv,
+  getAllPanels,
+  getSinglePanel,
+};

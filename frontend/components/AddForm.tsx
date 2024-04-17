@@ -24,6 +24,7 @@ import {
 } from "@/lib/slices/stocksApiSlice";
 import { TfiLayoutSliderAlt } from "react-icons/tfi";
 import { BsStack } from "react-icons/bs";
+import CustomTable from "./CustomTable";
 
 const formSchema = z.object({
   length: z.string().min(2).max(50),
@@ -63,10 +64,10 @@ const AddForm = ({ title, icon, type }: Props) => {
       file_input: "",
     },
   });
-  console.log("type", type);
+  // console.log("type", type);
 
   async function onSubmit(values: { [key: string]: string }) {
-    console.log("values", values);
+    // console.log("values", values);
     // values.preventDefault();
     const newData: { [key: string]: string | number } = {};
 
@@ -78,7 +79,7 @@ const AddForm = ({ title, icon, type }: Props) => {
       }
     });
 
-    console.log("newData", newData);
+    // console.log("newData", newData);
     const { length, width, qty, name } = newData;
     const updatedData = { length, width, qty, name };
     console.log("updatedData", updatedData);
@@ -106,7 +107,7 @@ const AddForm = ({ title, icon, type }: Props) => {
       console.log("error", error);
     }
   }
-  console.log("files", files);
+  // console.log("files", files);
 
   const handleUploadStockCSV = async (file: any) => {
     file.preventDefault();
@@ -238,73 +239,78 @@ const AddForm = ({ title, icon, type }: Props) => {
           </Button>
         </form>
       </Form> */}
-      <h1 className="text-xl font-bold flex items-center gap-2 mb-4">
+      <h1 className="text-xl font-bold flex items-center gap-2 mb-1">
         {icon}
         {title}
       </h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="length"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Length</FormLabel>
-                <FormControl>
-                  <Input placeholder="Length" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="width"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Width</FormLabel>
-                <FormControl>
-                  <Input placeholder="Width" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="qty"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Quantity</FormLabel>
-                <FormControl>
-                  <Input placeholder="Quantity" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            type="submit"
-            size={"sm"}
-            className="mr-2"
-            disabled={isLoading}
+        <div>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-1 py-2 grid-cols-2"
           >
-            Save
-          </Button>
-        </form>
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="length"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Length</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Length" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="width"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Width</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Width" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="qty"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Quantity" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              size={"sm"}
+              className="mr-2 mt-2"
+              disabled={isLoading}
+            >
+              Save
+            </Button>
+          </form>
+        </div>
       </Form>
 
       <Form {...form}>
@@ -340,6 +346,7 @@ const AddForm = ({ title, icon, type }: Props) => {
           </Button>
         </form>
       </Form>
+      <CustomTable />
     </section>
   );
 };

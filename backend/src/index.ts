@@ -7,6 +7,7 @@ import UserRoutes from "./routes/user.route";
 import SettingsRoutes from "./routes/settings.route";
 import session from "express-session";
 import path from "path";
+import ErrorMiddleware from "./middleware/error.middleware";
 
 dotenv.config();
 const app = express();
@@ -39,6 +40,7 @@ app.use("/settings", SettingsRoutes);
 app.get("/ping", (req: Request, res: Response): void => {
   res.status(200).json({ message: "Root Route Working" });
 });
-
+app.use(ErrorMiddleware.notFound);
+app.use(ErrorMiddleware.errorHandler);
 // port defined for listening at port configured from process env
 app.listen(PORT, () => console.log(`Server is running at PORT:${PORT}`));
