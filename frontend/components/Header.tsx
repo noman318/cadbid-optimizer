@@ -34,18 +34,25 @@ import {
 } from "@/lib/slices/settingSlice";
 
 const formSchema = z.object({
-  trimLeft: z.string(),
-  trimRight: z.string(),
-  trimTop: z.string(),
-  trimBottom: z.string(),
-  bladeWidth: z.string(),
-  minimizeLayoutNumber: z.boolean(),
-  minimizeSheetRotation: z.boolean(),
+  nLeftTrim: z.string().default(""),
+  nRightTrim: z.string().default(""),
+  nTopTrim: z.string().default(""),
+  nBottomTrim: z.string().default(""),
+  nSawKerfValue: z.string().default(""),
+  bMinmizePanelRotation: z.boolean().default(true),
+  bCuttingLayoutMin: z.boolean().default(false),
+  nCuttingComplexity: z.string().default(""),
+  nMaxLayoutSize: z.string().default(""),
+  bCutDirection: z.boolean().default(false),
+  bRollMode: z.boolean().default(false),
   userId: z.string().min(8).max(80),
 });
+
 const Header = () => {
   const [createSetting, { data, isLoading, isError }] =
     useCreateSettingMutation();
+
+  let showUserId = false;
 
   const [settings, { data: settingData }] = useCreateSettingMutation();
   // console.log("settingData", settingData);
@@ -57,13 +64,13 @@ const Header = () => {
       nBottomTrim: "",
       nTopTrim: "",
       nSawKerfValue: "",
-      bMinmizePanelRotation: true,
-      bCuttingLayoutMin: false,
       nCuttingComplexity: "",
       nMaxLayoutSize: "",
+      bMinmizePanelRotation: true,
+      bCuttingLayoutMin: false,
       bCutDirection: false,
       bRollMode: false,
-      userId: "",
+      userId: "37c32313-99ad-4d70-90d3-d8fe0df2f823",
     },
   });
 
@@ -115,7 +122,7 @@ const Header = () => {
                 <div className="grid gap-2 py-2 grid-cols-2">
                   <FormField
                     control={form.control}
-                    name="trimLeft"
+                    name="nLeftTrim"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Trim Left</FormLabel>
@@ -133,7 +140,7 @@ const Header = () => {
 
                   <FormField
                     control={form.control}
-                    name="trimRight"
+                    name="nRightTrim"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Trim Right</FormLabel>
@@ -151,7 +158,7 @@ const Header = () => {
 
                   <FormField
                     control={form.control}
-                    name="trimTop"
+                    name="nTopTrim"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Trim Top</FormLabel>
@@ -169,7 +176,7 @@ const Header = () => {
 
                   <FormField
                     control={form.control}
-                    name="trimBottom"
+                    name="nBottomTrim"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Trim Bottom</FormLabel>
@@ -187,7 +194,7 @@ const Header = () => {
 
                   <FormField
                     control={form.control}
-                    name="bladeWidth"
+                    name="nSawKerfValue"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Blade Width</FormLabel>
@@ -202,14 +209,35 @@ const Header = () => {
                       </FormItem>
                     )}
                   />
-                  <FormField
+                  {/* <FormField
                     control={form.control}
-                    name="userId"
+                    name="nSawKerfValue"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Id</FormLabel>
+                        <FormLabel>Blade Width</FormLabel>
                         <FormControl>
-                          <Input placeholder="Length" {...field} />
+                          <Input
+                            placeholder="Length"
+                            type="number"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  /> */}
+                  <FormField
+                    control={form.control}
+                    name="nMaxLayoutSize"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Max Layout Size</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Length"
+                            type="number"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -217,7 +245,45 @@ const Header = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="minimizeLayoutNumber"
+                    name="nCuttingComplexity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cutting Complexity</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Length"
+                            type="number"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {showUserId && (
+                    <FormField
+                      control={form.control}
+                      name="userId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Id</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="hidden"
+                              placeholder="user Id"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  <br />
+                  <br />
+                  <FormField
+                    control={form.control}
+                    name="bMinmizePanelRotation"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                         <FormControl>
@@ -234,7 +300,7 @@ const Header = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="minimizeSheetRotation"
+                    name="bCuttingLayoutMin"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                         <FormControl>
@@ -245,6 +311,40 @@ const Header = () => {
                         </FormControl>
                         <div className="space-y-1 leading-none">
                           <FormLabel>Minimize Sheet Rotation</FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="bCutDirection"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Cut Direction</FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="bRollMode"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Roll Mode</FormLabel>
                         </div>
                       </FormItem>
                     )}
