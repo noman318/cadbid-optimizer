@@ -13,6 +13,9 @@ router
   .route("/upload")
   .post(upload.single("file"), StockSheetController.uploadCsv);
 // router.post("/create");
-router.route("/:id").get(StockSheetController.getSingleStockData);
+router
+  .route("/:id")
+  .get(StockSheetController.getSingleStockData)
+  .delete(StockSheetController.deleteStockSheet);
 
 export default router;

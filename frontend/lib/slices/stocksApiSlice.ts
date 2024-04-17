@@ -29,8 +29,19 @@ export const stocksApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
+    deleteStock: builder.mutation({
+      query: (id) => ({
+        url: `${STOCK_SHEETS_URL}/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
-export const { useCreateStockMutation, useUploadStocksCsvMutation } =
-  stocksApiSlice;
+export const {
+  useCreateStockMutation,
+  useUploadStocksCsvMutation,
+  useGetAllStockSheetsQuery,
+  useGetSingleSheetQuery,
+  useDeleteStockMutation,
+} = stocksApiSlice;

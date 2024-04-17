@@ -67,6 +67,27 @@ const createStocksSheets = async (
   }
 };
 
+const deleteStockSheet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  console.log("id", id);
+  try {
+    const stockSheet = await prisma.stock_Sheets.findUnique({ where: { id } });
+    // console.log("stockSheet", stockSheet);
+    if (!stockSheet) {
+      throw new Error("No Stock Sheet with this ID found");
+    } else {
+      await prisma.stock_Sheets.delete({ where: { id } });
+      return res.json({ message: "Deleted Successfully" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
   // console.log("req", req.file);
   // res.send("running");
@@ -105,4 +126,5 @@ export default {
   uploadCsv,
   getAllStockSheets,
   getSingleStockData,
+  deleteStockSheet,
 };

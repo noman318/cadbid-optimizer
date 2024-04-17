@@ -83,6 +83,23 @@ const createPanel = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const deletePanel = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  console.log("id", id);
+  try {
+    const panel = await prisma.panel.findUnique({ where: { id } });
+    // console.log("panel", panel);
+    if (!panel) {
+      throw new Error("No panel with this ID found");
+    } else {
+      await prisma.panel.delete({ where: { id } });
+      return res.json({ message: "Deleted Successfully" });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
 const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
   // console.log("req", req.file);
   // res.send("running");
@@ -120,4 +137,5 @@ export default {
   uploadCsv,
   getAllPanels,
   getSinglePanel,
+  deletePanel,
 };

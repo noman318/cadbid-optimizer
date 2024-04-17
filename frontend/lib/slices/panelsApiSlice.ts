@@ -29,6 +29,12 @@ export const panelsApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
+    deletePanel: builder.mutation({
+      query: (id) => ({
+        url: `${PANEL_URL}/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -37,4 +43,5 @@ export const {
   useUploadPanelCsvMutation,
   useGetAllPanelsQuery,
   useGetSinglePanelQuery,
+  useDeletePanelMutation,
 } = panelsApiSlice;

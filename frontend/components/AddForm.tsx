@@ -1,9 +1,5 @@
 "use client";
 
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,9 +18,10 @@ import {
   useCreateStockMutation,
   useUploadStocksCsvMutation,
 } from "@/lib/slices/stocksApiSlice";
-import { TfiLayoutSliderAlt } from "react-icons/tfi";
-import { BsStack } from "react-icons/bs";
-import CustomTable from "./CustomTable";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z.object({
   length: z.string().min(2).max(50),
@@ -346,7 +343,6 @@ const AddForm = ({ title, icon, type }: Props) => {
           </Button>
         </form>
       </Form>
-      <CustomTable />
     </section>
   );
 };
