@@ -55,15 +55,8 @@ const loginUser = async (req: CustomRequest, res: Response) => {
       res.json({ message: "found" });
     }
     // res.json({ message: "Not Found" });
-    return;
-    //@ts-expect-error
+    // return;
 
-    const existingUser = await getUserById(user.nEmailUserID!.toString());
-    //@ts-expect-error
-    if (!existingUser || existingUser.bEmailVerified === 0) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    req.session.user = existingUser;
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error("Error processing login:", error);

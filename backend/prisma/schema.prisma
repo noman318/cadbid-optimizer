@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Panel {
-  id          String @id @default(uuid())
+  id     String @id @default(uuid())
   name   String @default("")
   length Int    @default(0)
   width  Int    @default(0)
@@ -27,6 +27,8 @@ model User {
   id        String    @id @default(uuid())
   name      String
   userName  String
+  password  String
+  isAdmin   Boolean   @default(false)
   settingId Settings?
 }
 
