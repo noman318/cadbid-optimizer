@@ -15,7 +15,7 @@ const PanelTable = () => {
           <Loader />
         </>
       ) : (
-        <div aria-label="parent_table" className="-z-10">
+        <div aria-label="parent_table">
           <CustomTable
             tableHead={panelHead}
             tableData={data}

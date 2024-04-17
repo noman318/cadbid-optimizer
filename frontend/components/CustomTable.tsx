@@ -55,7 +55,10 @@ const CustomTable = ({
     }
   };
   return (
-    <Table aria-label="table_body">
+    <Table
+      aria-label="table_body"
+      className=" overflow-x-hidden overflow-y-hidden hide-scrollbar -z-0"
+    >
       {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
       <TableHeader className=" font-bold">
         <TableRow>
