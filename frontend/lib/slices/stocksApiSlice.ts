@@ -3,6 +3,18 @@ import { apiSlice } from "./apiSlice";
 
 export const stocksApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getAllStockSheets: builder.query({
+      query: () => ({
+        url: `${STOCK_SHEETS_URL}`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
+    getSingleSheet: builder.query({
+      query: (id) => ({
+        url: `${STOCK_SHEETS_URL}/${id}`,
+      }),
+      keepUnusedDataFor: 5,
+    }),
     createStock: builder.mutation({
       query: (data) => ({
         url: `${STOCK_SHEETS_URL}`,
