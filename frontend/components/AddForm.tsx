@@ -26,18 +26,20 @@ const formSchema = z.object({
   length: z.string().min(2).max(50),
   width: z.string().min(2).max(50),
   qty: z.string().min(1).max(50),
-  panelLength: z.string().min(1).max(50),
-  panelWidth: z.string().min(1).max(50),
-  panelQty: z.string().min(1).max(50),
+  name: z.string(),
+  // panelLength: z.string().min(1).max(50),
+  // panelWidth: z.string().min(1).max(50),
+  // panelQty: z.string().min(1).max(50),
   file_input: z.string(),
 });
 
 type Props = {
   title: string;
-  icon: React.ReactNode;
+  icon: React.ReactElement<React.SVGProps<SVGSVGElement>>;
   type: string;
 };
-const AddForm = () => {
+
+const AddForm = ({ title, icon, type }: Props) => {
   const [createPanel, { data: createPanelData, isError, isLoading }] =
     useCreatePanelMutation();
   const [createStock, { data: creatStockeData }] = useCreateStockMutation();
@@ -51,32 +53,40 @@ const AddForm = () => {
       length: "",
       width: "",
       qty: "",
-      panelLength: "",
-      panelWidth: "",
-      panelQty: "",
+      name: "",
       file_input: "",
     },
   });
+  console.log("type", type);
 
   async function onSubmit(values: { [key: string]: string }) {
-    // console.log("values", values);
+    console.log("values", values);
+    // values.preventDefault();
     const newData: { [key: string]: string | number } = {};
 
     Object.keys(values).forEach((key) => {
-      newData[key] = Number(values[key]);
+      if (key !== "name") {
+        newData[key] = Number(values[key]);
+      } else {
+        newData[key] = values[key];
+      }
     });
 
-    // calling different apiSlice according to the type passed from the props
+    console.log("newData", newData);
+    const { length, width, qty, name } = newData;
+    const updatedData = { length, width, qty, name };
+    console.log("updatedData", updatedData);
+    // console.log("type", type);
 
     try {
-      await createPanel(newData).unwrap();
+      await createPanel(updatedData).unwrap();
 
       // form.reset({
       //   length: "",
       //   width: "",
       //   qty: "",
       // }),
-      console.log("newData", newData);
+      alert("created panel");
     } catch (error) {
       console.log("error", error);
     }
@@ -118,11 +128,11 @@ const AddForm = () => {
   return (
     <section>
       <h1 className="text-xl font-bold flex items-center gap-2 mb-4">
-        <TfiLayoutSliderAlt />
-        {"Panels"}
+        {/* <TfiLayoutSliderAlt />
+        {"Panels"} */}
       </h1>
       {isError ? <h1 className="text-red-600">Something Went wrong</h1> : <></>}
-      <Form {...form}>
+      {/* <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
@@ -205,64 +215,75 @@ const AddForm = () => {
             Upload
           </Button>
         </form>
+      </Form> */}
+      <h1 className="text-xl font-bold flex items-center gap-2 mb-4">
+        {icon}
+        {title}
+      </h1>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="length"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Length</FormLabel>
+                <FormControl>
+                  <Input placeholder="Length" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="width"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Width</FormLabel>
+                <FormControl>
+                  <Input placeholder="Width" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="qty"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantity</FormLabel>
+                <FormControl>
+                  <Input placeholder="Quantity" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            type="submit"
+            size={"sm"}
+            className="mr-2"
+            disabled={isLoading}
+          >
+            Save
+          </Button>
+        </form>
       </Form>
-      <div style={{ marginTop: "25%" }}>
-        <h1 className="text-xl font-bold flex items-center gap-2 mb-4">
-          <BsStack />
-          {"Stock Sheets"}
-        </h1>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="length"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Length</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Length" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="width"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Width</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Width" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="qty"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Quantity</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Quantity" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              size={"sm"}
-              className="mr-2"
-              disabled={isLoading}
-            >
-              Save
-            </Button>
-          </form>
-        </Form>
-      </div>
 
       <Form {...form}>
         <form>

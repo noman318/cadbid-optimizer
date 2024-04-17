@@ -15,10 +15,10 @@ datasource db {
 
 model Panel {
   id          String @id @default(uuid())
-  panelName   String @default("") @map("name")
-  panelLength Int    @default(0) @map("length")
-  panelWidth  Int    @default(0) @map("width")
-  panelQty    Int    @default(0) @map("qty")
+  name   String @default("")
+  length Int    @default(0)
+  width  Int    @default(0)
+  qty    Int    @default(0)
 
   @@map("panels")
 }

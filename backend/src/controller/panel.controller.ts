@@ -13,19 +13,10 @@ const testPanelController = async (req: Request, res: Response) => {
 const createPanel = async (req: Request, res: Response, next: NextFunction) => {
   // console.log("calling Create");
   console.log("req.body", req.body);
-  const {
-    length,
-    width,
-    qty,
-    name,
-    panelLength,
-    panelWidth,
-    panelQty,
-    panelName,
-  } = req.body;
+  const { length, width, qty, name } = req.body;
   try {
     // Create the stock sheet
-    const stockSheet = await prisma.stock_Sheets.create({
+    const panel = await prisma.panel.create({
       data: {
         name,
         length,
@@ -35,20 +26,20 @@ const createPanel = async (req: Request, res: Response, next: NextFunction) => {
     });
     // console.log("stockSheet", stockSheet);
     // Create the panel and connect it to the created stock sheet
-    const panel = await prisma.panel.create({
-      data: {
-        panelName,
-        panelLength,
-        panelWidth,
-        panelQty,
-        // stockSheet: {
-        //   connect: { id: stockSheet.id },
-        // },
-      },
-    });
+    // const panel = await prisma.panel.create({
+    //   data: {
+    //     panelName,
+    //     panelLength,
+    //     panelWidth,
+    //     panelQty,
+    //     // stockSheet: {
+    //     //   connect: { id: stockSheet.id },
+    //     // },
+    //   },
+    // });
     // console.log("panel", panel);
     // Return both the created stock sheet and panel
-    res.json({ stockSheet, panel });
+    res.json({ data: panel });
   } catch (error) {
     console.log("error", error);
     next(error);
@@ -70,10 +61,10 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
         .then(async (response: string | any[]) => {
           for (let i = 0; i < response.length; i++) {
             panelData.push({
-              panelLength: +response[i].length,
-              panelWidth: +response[i].width,
-              panelQty: +response[i].qty,
-              panelName: response[i].name,
+              length: +response[i].length,
+              width: +response[i].width,
+              qty: +response[i].qty,
+              name: response[i].name,
             });
           }
           await prisma.panel.createMany({ data: panelData });
