@@ -16,7 +16,7 @@ const getAllPanels = async (
   next: NextFunction
 ) => {
   try {
-    const panels = await prisma.panel.findMany({});
+    const panels = await prisma.mPanel.findMany({});
     // console.log("panels", panels);
     return res.json(panels);
   } catch (error) {
@@ -32,8 +32,8 @@ const getSinglePanel = async (
 ) => {
   const { id } = req.params;
   try {
-    const panel = await prisma.panel.findUnique({
-      where: { id },
+    const panel = await prisma.mPanel.findUnique({
+      where: { sPanelID: id },
     });
     if (!panel) {
       throw new Error("No Panel with given ID found");
@@ -50,15 +50,16 @@ const getSinglePanel = async (
 const createPanel = async (req: Request, res: Response, next: NextFunction) => {
   // console.log("calling Create");
   console.log("req.body", req.body);
-  const { length, width, qty, name } = req.body;
+  const { nLength, nWidth, nQty, sName, sMaterialName } = req.body;
   try {
     // Create the stock sheet
-    const panel = await prisma.panel.create({
+    const panel = await prisma.mPanel.create({
       data: {
-        name,
-        length,
-        width,
-        qty,
+        sName,
+        nLength,
+        nWidth,
+        nQty,
+        sMaterialName,
       },
     });
     // console.log("stockSheet", stockSheet);
@@ -87,12 +88,12 @@ const deletePanel = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
   console.log("id", id);
   try {
-    const panel = await prisma.panel.findUnique({ where: { id } });
+    const panel = await prisma.mPanel.findUnique({ where: { sPanelID: id } });
     // console.log("panel", panel);
     if (!panel) {
       throw new Error("No panel with this ID found");
     } else {
-      await prisma.panel.delete({ where: { id } });
+      await prisma.mPanel.delete({ where: { sPanelID: id } });
       return res.json({ message: "Deleted Successfully" });
     }
   } catch (error) {
@@ -113,15 +114,17 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
       csv()
         .fromFile(file)
         .then(async (response: string | any[]) => {
+          // console.log("response", response);
           for (let i = 0; i < response.length; i++) {
             panelData.push({
-              length: +response[i].length,
-              width: +response[i].width,
-              qty: +response[i].qty,
-              name: response[i].name,
+              nLength: +response[i].length,
+              nWidth: +response[i].width,
+              nQty: +response[i].qty,
+              sName: response[i].name,
+              sMaterialName: response[i].material,
             });
           }
-          await prisma.panel.createMany({ data: panelData });
+          await prisma.mPanel.createMany({ data: panelData });
         });
     }
     return res.status(200).json({ message: "Uploaded CSV" });

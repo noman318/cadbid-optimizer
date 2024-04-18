@@ -16,7 +16,7 @@ const getAllStockSheets = async (
   next: NextFunction
 ) => {
   try {
-    const stockSheets = await prisma.stock_Sheets.findMany({});
+    const stockSheets = await prisma.mStockSheets.findMany({});
     return res.json(stockSheets);
   } catch (error) {
     console.log("error", error);
@@ -31,8 +31,8 @@ const getSingleStockData = async (
 ) => {
   const { id } = req.params;
   try {
-    const stockSheet = await prisma.stock_Sheets.findUnique({
-      where: { id },
+    const stockSheet = await prisma.mStockSheets.findUnique({
+      where: { sStockID: id },
     });
     if (!stockSheet) {
       throw new Error("No stock sheeet with given ID found");
@@ -51,16 +51,17 @@ const createStocksSheets = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { length, width, qty } = req.body;
+  const { nLength, nWidth, nQty, sName } = req.body;
   try {
-    const panel = await prisma.stock_Sheets.create({
+    const stockSheet = await prisma.mStockSheets.create({
       data: {
-        length,
-        width,
-        qty,
+        sName,
+        nLength,
+        nWidth,
+        nQty,
       },
     });
-    res.json(panel);
+    res.json(stockSheet);
   } catch (error) {
     console.log("error", error);
     next(error);
@@ -75,12 +76,14 @@ const deleteStockSheet = async (
   const { id } = req.params;
   console.log("id", id);
   try {
-    const stockSheet = await prisma.stock_Sheets.findUnique({ where: { id } });
+    const stockSheet = await prisma.mStockSheets.findUnique({
+      where: { sStockID: id },
+    });
     // console.log("stockSheet", stockSheet);
     if (!stockSheet) {
       throw new Error("No Stock Sheet with this ID found");
     } else {
-      await prisma.stock_Sheets.delete({ where: { id } });
+      await prisma.mStockSheets.delete({ where: { sStockID: id } });
       return res.json({ message: "Deleted Successfully" });
     }
   } catch (error) {
@@ -93,7 +96,7 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
   // res.send("running");
   console.log("req.file", req.file);
   const file = req?.file?.path;
-  console.log("file", file);
+  // console.log("file", file);
   try {
     const stockSheetData: any = [];
     if (!file) {
@@ -102,15 +105,16 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
       csv()
         .fromFile(file)
         .then(async (response) => {
+          // console.log("response", response);
           for (let i = 0; i < response.length; i++) {
             stockSheetData.push({
-              length: +response[i].length,
-              width: +response[i].width,
-              qty: +response[i].qty,
-              name: response[i].name,
+              nLength: +response[i].length,
+              nWidth: +response[i].width,
+              nQty: +response[i].qty,
+              sName: response[i].name,
             });
           }
-          await prisma.stock_Sheets.createMany({ data: stockSheetData });
+          await prisma.mStockSheets.createMany({ data: stockSheetData });
         });
     }
     return res.status(200).json({ message: "Uploaded CSV" });

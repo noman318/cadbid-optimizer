@@ -21,9 +21,10 @@ const createSetting = async (req: Request, res: Response) => {
       userId,
       bCutDirection,
       bRollMode,
+      sUserId,
     } = req.body;
 
-    const settings = await prisma.settings.create({
+    const settings = await prisma.mSettings.create({
       data: {
         nLeftTrim:
           typeof nLeftTrim === "string" ? Number(nLeftTrim) : nLeftTrim,
@@ -61,7 +62,7 @@ const createSetting = async (req: Request, res: Response) => {
           typeof bRollMode === "string"
             ? bRollMode.toLowerCase() === "true"
             : bRollMode,
-        userId,
+        sUserId,
       },
     });
 
@@ -76,15 +77,15 @@ const createSetting = async (req: Request, res: Response) => {
 
 const getSettings = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const settingData = await prisma.settings.findUnique({
-    where: { id },
+  const settingData = await prisma.mSettings.findUnique({
+    where: { sSettingsID: id },
     include: { user: true },
   });
   res.json(settingData);
 };
 
 const getAllSettings = async (req: Request, res: Response) => {
-  const allSettings = await prisma.settings.findMany({
+  const allSettings = await prisma.mSettings.findMany({
     include: { user: true },
   });
   res.json(allSettings);

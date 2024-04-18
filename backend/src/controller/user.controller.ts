@@ -1,42 +1,45 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../utils/db";
 import { Session } from "express-session"; // Import Session type from express-session
-
+import bcrypt from "bcryptjs";
 const testUserController = (req: Request, res: Response) => {
   res.json({ message: "User Controller is running" });
 };
 
 const createUser = async (req: Request, res: Response) => {
-  const { name, userName } = req.body;
+  const { sName, sUserName, sPassword } = req.body;
   // console.log("name", name);
-  const user = await prisma.user.create({
-    data: { name, userName },
-  });
-  res.json(user);
+  const hashedPassword = await bcrypt.hash(sPassword, 10);
+  console.log("hashedPassword", hashedPassword);
+  try {
+    const user = await prisma.mUserNew.create({
+      data: { sName, sUserName, sPassword: hashedPassword },
+    });
+    res.json(user);
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
 const getAllUsers = async (req: Request, res: Response) => {
-  const allUsers = await prisma.user.findMany({});
-  res.json(allUsers);
+  try {
+    const allUsers = await prisma.mUserNew.findMany({});
+    res.json(allUsers);
+  } catch (error) {
+    console.log("error", error);
+  }
 };
 
 const getSingleUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const user = await prisma.user.findUnique({ where: { id } });
-  res.json(user);
-};
-const getUserById = async (nEmailUserID: string) => {
   try {
-    const userId = parseInt(nEmailUserID);
-    const user = await prisma.memailuser.findUnique({
-      where: { nEmailUserID: userId },
-    });
-
-    return user;
+    const user = await prisma.mUserNew.findUnique({ where: { sUserID: id } });
+    res.json(user);
   } catch (error) {
-    return error;
+    console.log("error", error);
   }
 };
+
 // const user = getUserById("1");
 // console.log("user", user);
 
@@ -49,11 +52,8 @@ const loginUser = async (req: CustomRequest, res: Response) => {
     const { email } = req.body;
     console.log("email", email);
 
-    const userData = await prisma.user.findMany({});
-    console.log("userData", userData);
-    if (userData) {
-      res.json({ message: "found" });
-    }
+    // const user = await prisma.user.findUnique({ where: { userName: email } });
+
     // res.json({ message: "Not Found" });
     // return;
 
