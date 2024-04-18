@@ -8,6 +8,7 @@ const StockTable = () => {
   const { data: stockData, isLoading, refetch } = useGetAllStockSheetsQuery({});
   // console.log("stockData", stockData);
   const stockHead = stockData && Object?.keys(stockData?.[0]);
+  stockHead?.shift();
   return (
     <React.Fragment>
       {isLoading ? (

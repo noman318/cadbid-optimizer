@@ -24,10 +24,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  length: z.string().min(2).max(50),
-  width: z.string().min(2).max(50),
-  qty: z.string().min(1).max(50),
-  name: z.string(),
+  nLength: z.string().min(2).max(50),
+  nWidth: z.string().min(2).max(50),
+  nQty: z.string().min(1).max(50),
+  sName: z.string(),
+  sMaterialName: z.string(),
   // panelLength: z.string().min(1).max(50),
   // panelWidth: z.string().min(1).max(50),
   // panelQty: z.string().min(1).max(50),
@@ -47,17 +48,18 @@ const AddForm = ({ title, icon, type }: Props) => {
   const [files, setFiles] = useState<File | null>(null);
   const [uploadStockCSV, { isLoading: uploadLoading }] =
     useUploadStocksCsvMutation();
-
+  // console.log("type", type);
   const [uploadPanelCSV, { isLoading: panelCsvLoading }] =
     useUploadPanelCsvMutation();
   // console.log("createData", createData);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      length: "",
-      width: "",
-      qty: "",
-      name: "",
+      nLength: "",
+      nWidth: "",
+      nQty: "",
+      sName: "",
+      sMaterialName: "",
       file_input: "",
     },
   });
@@ -69,37 +71,44 @@ const AddForm = ({ title, icon, type }: Props) => {
     const newData: { [key: string]: string | number } = {};
 
     Object.keys(values).forEach((key) => {
-      if (key !== "name") {
-        newData[key] = Number(values[key]);
-      } else {
+      if (key === "sName" || key === "sMaterialName") {
         newData[key] = values[key];
+      } else {
+        newData[key] = Number(values[key]);
       }
     });
 
     // console.log("newData", newData);
-    const { length, width, qty, name } = newData;
-    const updatedData = { length, width, qty, name };
-    console.log("updatedData", updatedData);
+    const { nLength, nWidth, nQty, sName } = newData;
+    const updatedData = { nLength, nWidth, nQty, sName };
+    // console.log("updatedData", updatedData);
     // console.log("type", type);
-
     try {
       if (type === "panel") {
-        await createPanel(updatedData).unwrap();
+        await createPanel(newData).unwrap();
         alert("created panel");
+        form.reset({
+          nLength: "",
+          nWidth: "",
+          nQty: "",
+          sName: "",
+          sMaterialName: "",
+        });
         return;
       } else if (type === "stock") {
         await createStock(updatedData).unwrap();
         alert("created stocks");
+        form.reset({
+          nLength: "",
+          nWidth: "",
+          nQty: "",
+          sName: "",
+          sMaterialName: "",
+        });
         return;
       } else {
         alert("Provide Proper Type");
       }
-      form.reset({
-        length: "",
-        width: "",
-        qty: "",
-        name: "",
-      });
     } catch (error) {
       console.log("error", error);
     }
@@ -248,7 +257,7 @@ const AddForm = ({ title, icon, type }: Props) => {
           >
             <FormField
               control={form.control}
-              name="name"
+              name="sName"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -261,7 +270,7 @@ const AddForm = ({ title, icon, type }: Props) => {
             />
             <FormField
               control={form.control}
-              name="length"
+              name="nLength"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Length</FormLabel>
@@ -274,7 +283,7 @@ const AddForm = ({ title, icon, type }: Props) => {
             />
             <FormField
               control={form.control}
-              name="width"
+              name="nWidth"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Width</FormLabel>
@@ -287,7 +296,7 @@ const AddForm = ({ title, icon, type }: Props) => {
             />
             <FormField
               control={form.control}
-              name="qty"
+              name="nQty"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Quantity</FormLabel>
@@ -298,14 +307,36 @@ const AddForm = ({ title, icon, type }: Props) => {
                 </FormItem>
               )}
             />
-            <Button
-              type="submit"
-              size={"sm"}
-              className="mr-2 mt-2"
-              disabled={isLoading}
-            >
-              Save
-            </Button>
+            {type === "panel" && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="sMaterialName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Material Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Material" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div></div>
+              </>
+            )}
+            <br />
+            <>
+              <div></div>
+              <Button
+                type="submit"
+                size={"sm"}
+                className="mr-2 -mt-4"
+                disabled={isLoading}
+              >
+                Save
+              </Button>
+            </>
           </form>
         </div>
       </Form>

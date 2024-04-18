@@ -16,11 +16,12 @@ import { useDeletePanelMutation } from "@/lib/slices/panelsApiSlice";
 import { useDeleteStockMutation } from "@/lib/slices/stocksApiSlice";
 
 interface Item {
-  id?: string;
-  name?: string;
-  length?: number;
-  width?: number;
-  qty?: number;
+  sStockID: string;
+  sName?: string;
+  sMaterialName?: string;
+  nLength?: number;
+  nWidth?: number;
+  nQty?: number;
 }
 
 const CustomTable = ({
@@ -54,6 +55,14 @@ const CustomTable = ({
       return;
     }
   };
+
+  function formatTableHeader(sUserType: string) {
+    if (sUserType.charAt(0) === sUserType.charAt(0).toLowerCase()) {
+      sUserType = sUserType.substring(1);
+    }
+    return sUserType.split(/(?=[A-Z])/).join(" ");
+  }
+
   return (
     <Table
       aria-label="table_body"
@@ -64,7 +73,9 @@ const CustomTable = ({
         <TableRow>
           {tableHead?.map((head, index) => (
             <React.Fragment key={index}>
-              <TableHead className=" capitalize">{head}</TableHead>
+              <TableHead className=" capitalize">
+                {formatTableHeader(head)}
+              </TableHead>
             </React.Fragment>
           ))}
           <TableHead className=" capitalize">{"Actions"}</TableHead>
@@ -76,20 +87,24 @@ const CustomTable = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {tableData?.map((item, index) => (
-          <TableRow key={item.id}>
-            <TableCell className="font-medium">{index + 1}</TableCell>
+        {tableData?.map((item) => (
+          <TableRow key={item.sStockID}>
             <TableCell className="font-medium capitalize text-ellipsis">
-              {item.name}
+              {item.sName}
             </TableCell>
-            <TableCell>{item.length}</TableCell>
-            <TableCell>{item.width}</TableCell>
-            <TableCell>{item.qty}</TableCell>
+            {type === "panel" && (
+              <TableCell className="font-medium capitalize text-ellipsis">
+                {item.sMaterialName}
+              </TableCell>
+            )}
+            <TableCell>{item.nLength}</TableCell>
+            <TableCell>{item.nWidth}</TableCell>
+            <TableCell>{item.nQty}</TableCell>
             <TableCell className=" flex items-center justify-center gap-3">
               <ImCross
                 className="cursor-pointer"
                 color="red"
-                onClick={() => removeItem(item?.id)}
+                onClick={() => removeItem(item?.sStockID)}
               />
               <FaCheck className="cursor-pointer" color="green" size={15} />
             </TableCell>

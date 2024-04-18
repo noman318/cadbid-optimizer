@@ -8,6 +8,8 @@ const PanelTable = () => {
   const { data, isLoading, refetch } = useGetAllPanelsQuery({});
   // console.log("data", data.slice(0, 2));
   const panelHead = data && Object?.keys(data?.[0]);
+  panelHead?.shift();
+  // console.log("data", data);
   return (
     <React.Fragment>
       {isLoading ? (
