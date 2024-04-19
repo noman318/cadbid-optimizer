@@ -22,6 +22,7 @@ const createSetting = async (req: Request, res: Response) => {
       bCutDirection,
       bRollMode,
       sUserId,
+      bLayoutNumber,
     } = req.body;
 
     const settings = await prisma.mSettings.create({
@@ -54,9 +55,13 @@ const createSetting = async (req: Request, res: Response) => {
           typeof bMinmizePanelRotation === "string"
             ? bMinmizePanelRotation.toLowerCase() === "true"
             : bMinmizePanelRotation,
+        bLayoutNumber:
+          typeof bLayoutNumber === "string"
+            ? bLayoutNumber.toLowerCase() === "true"
+            : bLayoutNumber,
         bCutDirection:
           typeof bCutDirection === "string"
-            ? bCutDirection.toLowerCase() === "true"
+            ? Number(bCutDirection)
             : bCutDirection,
         bRollMode:
           typeof bRollMode === "string"

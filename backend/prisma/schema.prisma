@@ -37,7 +37,8 @@ model mSettings {
   nMaxLayoutSize        Int      @default(0)
   bCuttingLayoutMin     Boolean
   bMinmizePanelRotation Boolean
-  bCutDirection         Boolean
+  bLayoutNumber         Boolean
+  bCutDirection         Int
   bRollMode             Boolean
   sUserId               String   @unique
   user                  mUserNew @relation(fields: [sUserId], references: [sUserID])
