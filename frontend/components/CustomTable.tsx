@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   useDeletePanelMutation,
@@ -18,15 +18,37 @@ import {
 } from "@/lib/slices/stocksApiSlice";
 import { FaCheck, FaRegSquare } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
+import { Form, FormControl, FormField } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  useForm,
+  FieldName,
+  FieldValues,
+  UseFormSetValue,
+} from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 interface Item {
   id: string;
   sName?: string;
   sMaterialName?: string;
-  nLength?: number;
-  nWidth?: number;
-  nQty?: number;
+  nLength?: number | string;
+  nWidth?: number | string;
+  nQty?: number | string;
   bIsEnabled?: boolean;
 }
+const formSchema = z.object({
+  nLength: z.string().min(2).max(50),
+  nWidth: z.string().min(2).max(50),
+  nQty: z.string().min(1).max(50),
+  sName: z.string(),
+  sMaterialName: z.string(),
+  // panelLength: z.string().min(1).max(50),
+  // panelWidth: z.string().min(1).max(50),
+  // panelQty: z.string().min(1).max(50),
+  file_input: z.string(),
+});
 
 const CustomTable = ({
   tableHead,
@@ -42,11 +64,41 @@ const CustomTable = ({
   // console.log("tableHead", tableHead);
   const newTableHead = tableHead && tableHead?.slice(0, -1);
   // console.log("newTableHead", newTableHead);
+  console.log("tableData", tableData);
+
   const [statusFlag, setStatusFlag] = useState(false);
   const [deletePanel] = useDeletePanelMutation();
   const [deleteStock] = useDeleteStockMutation();
   const [updatePanel] = useUpdatePanelMutation();
   const [updateStock] = useUpdateStockMutation();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues:
+      tableData &&
+      tableData.reduce((acc, item) => {
+        return {
+          ...acc,
+          [`sName_${item?.id}`]: item?.sName || "",
+          [`nLength_${item?.id}`]:
+            typeof item?.nLength === "number" ? String(item?.nLength) : "",
+          [`nWidth_${item?.id}`]:
+            typeof item?.nWidth === "number" ? String(item?.nWidth) : "",
+          [`nQty_${item?.id}`]:
+            typeof item?.nQty === "number" ? String(item?.nQty) : "",
+          [`sMaterialName_${item?.id}`]: item?.sMaterialName || "",
+        };
+      }, {}),
+  });
+
+  type FieldName =
+    | "nLength"
+    | "nWidth"
+    | "nQty"
+    | "sName"
+    | "sMaterialName"
+    | "file_input";
+
   const removeItem = async (id: string | undefined) => {
     console.log("id", id);
     console.log("statusFlag", statusFlag);
@@ -82,6 +134,32 @@ const CustomTable = ({
     return char;
   };
 
+  const handleChange = async (
+    field: FieldName,
+    value: any,
+    updatePanel: (data: { id: string; data: any }) => Promise<any>
+  ) => {
+    console.log("value", value);
+    console.log("field", field);
+    try {
+      // Extract item id from field name
+      const itemId = field.split("_")[1];
+      await updatePanel({ id: itemId, data: { [field]: value } });
+    } catch (error) {
+      console.log("Error updating panel:", error);
+    }
+  };
+
+  const handleFieldChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    field: FieldName,
+    setValue: UseFormSetValue<FieldValues>,
+    updatePanel: (data: { id: string; data: any }) => Promise<any>
+  ) => {
+    const { value } = event.target;
+    setValue(field, value);
+    handleChange(field, value, updatePanel);
+  };
   const handleUpdateStatusToEnabled = async (itemId: string) => {
     console.log("itemId", itemId);
     console.log("type", type);
@@ -160,44 +238,108 @@ const CustomTable = ({
       </TableHeader>
       <TableBody>
         {tableData?.map((item) => (
-          <TableRow key={item.id}>
-            <TableCell className="overflowing font-medium capitalize text-ellipsis">
-              {handleElippsis(`${item.sName}`)}
-            </TableCell>
-            {type === "panel" && (
-              <TableCell className="font-medium capitalize text-ellipsis overflowing">
-                {handleElippsis(`${item.sMaterialName}`)}
+          <TableRow key={item?.id}>
+            <Form {...form}>
+              <TableCell className="overflowing font-medium capitalize text-ellipsis">
+                <FormField
+                  control={form.control}
+                  name={`sName_${item?.id}` as FieldName}
+                  defaultValue={item?.sName}
+                  render={({ field }) => (
+                    <FormControl>
+                      <Input
+                        placeholder="Name"
+                        {...field}
+                        onChange={(event) =>
+                          handleFieldChange(
+                            event,
+                            `sName_${item?.id}` as FieldName,
+                            form.setValue as unknown as UseFormSetValue<FieldValues>,
+                            updatePanel
+                          )
+                        }
+                      />
+                    </FormControl>
+                  )}
+                />
               </TableCell>
-            )}
-            <TableCell>{item.nLength}</TableCell>
-            <TableCell>{item.nWidth}</TableCell>
-            <TableCell>{item.nQty}</TableCell>
-            <TableCell className=" flex items-center justify-start gap-3">
-              <ImCross
-                className="cursor-pointer"
-                color="red"
-                onClick={() => removeItem(item?.id)}
-              />
-              {item.bIsEnabled ? (
-                <>
-                  <FaCheck
-                    className="cursor-pointer"
-                    color="green"
-                    size={15}
-                    onClick={() => handleUpdateStatusToDisabled(item?.id)}
+              {type === "panel" && (
+                <TableCell className="font-medium capitalize text-ellipsis overflowing">
+                  <FormField
+                    control={form.control}
+                    name={`sMaterialName_${item?.id}` as FieldName}
+                    defaultValue={item?.sMaterialName}
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input placeholder="Name" {...field} />
+                      </FormControl>
+                    )}
                   />
-                </>
-              ) : (
-                <>
-                  <FaRegSquare
-                    className="cursor-pointer"
-                    color="green"
-                    size={15}
-                    onClick={() => handleUpdateStatusToEnabled(item?.id)}
-                  />
-                </>
+                </TableCell>
               )}
-            </TableCell>
+              <TableCell>
+                <FormField
+                  control={form.control}
+                  name={`nLength_${item?.id}` as FieldName}
+                  defaultValue={`${item?.nLength}`}
+                  render={({ field }) => (
+                    <FormControl>
+                      <Input placeholder="Quantity" {...field} />
+                    </FormControl>
+                  )}
+                />
+              </TableCell>
+              <TableCell>
+                <FormField
+                  control={form.control}
+                  name={`nWidth_${item?.id}` as FieldName}
+                  defaultValue={`${item?.nWidth}`}
+                  render={({ field }) => (
+                    <FormControl>
+                      <Input placeholder="Quantity" {...field} />
+                    </FormControl>
+                  )}
+                />
+              </TableCell>
+              <TableCell>
+                <FormField
+                  control={form.control}
+                  name={`nQty_${item?.id}` as FieldName}
+                  defaultValue={`${item?.nQty}`}
+                  render={({ field }) => (
+                    <FormControl>
+                      <Input placeholder="Quantity" {...field} />
+                    </FormControl>
+                  )}
+                />
+              </TableCell>
+              <TableCell className=" flex items-center justify-start gap-3">
+                <ImCross
+                  className="cursor-pointer"
+                  color="red"
+                  onClick={() => removeItem(item?.id)}
+                />
+                {item.bIsEnabled ? (
+                  <>
+                    <FaCheck
+                      className="cursor-pointer"
+                      color="green"
+                      size={15}
+                      onClick={() => handleUpdateStatusToDisabled(item?.id)}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <FaRegSquare
+                      className="cursor-pointer"
+                      color="green"
+                      size={15}
+                      onClick={() => handleUpdateStatusToEnabled(item?.id)}
+                    />
+                  </>
+                )}
+              </TableCell>
+            </Form>
           </TableRow>
         ))}
       </TableBody>
