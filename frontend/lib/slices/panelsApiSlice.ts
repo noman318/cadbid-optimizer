@@ -35,6 +35,13 @@ export const panelsApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    updatePanel: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `${PANEL_URL}/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -44,4 +51,5 @@ export const {
   useGetAllPanelsQuery,
   useGetSinglePanelQuery,
   useDeletePanelMutation,
+  useUpdatePanelMutation,
 } = panelsApiSlice;

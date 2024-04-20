@@ -1,22 +1,23 @@
-import React, { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import React, { useState } from "react";
 
-import { ImCross } from "react-icons/im";
+import {
+  useDeletePanelMutation,
+  useUpdatePanelMutation,
+} from "@/lib/slices/panelsApiSlice";
+import {
+  useDeleteStockMutation,
+  useUpdateStockMutation,
+} from "@/lib/slices/stocksApiSlice";
 import { FaCheck, FaRegSquare } from "react-icons/fa";
-import { useDeletePanelMutation } from "@/lib/slices/panelsApiSlice";
-import { useDeleteStockMutation } from "@/lib/slices/stocksApiSlice";
-import { Checkbox } from "./ui/checkbox";
-import { CheckedState } from "@radix-ui/react-checkbox";
-import { FormControl, FormField, FormItem } from "./ui/form";
+import { ImCross } from "react-icons/im";
 interface Item {
   id: string;
   sName?: string;
@@ -39,14 +40,16 @@ const CustomTable = ({
   fetch: any;
 }) => {
   // console.log("tableHead", tableHead);
-  const newTableHead = tableHead.slice(0, -1);
+  const newTableHead = tableHead && tableHead?.slice(0, -1);
   // console.log("newTableHead", newTableHead);
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [statusFlag, setStatusFlag] = useState(false);
   const [deletePanel] = useDeletePanelMutation();
   const [deleteStock] = useDeleteStockMutation();
+  const [updatePanel] = useUpdatePanelMutation();
+  const [updateStock] = useUpdateStockMutation();
   const removeItem = async (id: string | undefined) => {
     console.log("id", id);
-    console.log("isDisabled", isDisabled);
+    console.log("statusFlag", statusFlag);
     if (type === "panel") {
       await deletePanel(id).unwrap();
       alert("Panel Deleted");
@@ -79,16 +82,63 @@ const CustomTable = ({
     return char;
   };
 
-  const handleToggleLayoutNumber = (itemId: string, type: string) => {
+  const handleUpdateStatusToEnabled = async (itemId: string) => {
     console.log("itemId", itemId);
     console.log("type", type);
-    if (type === "enable") {
-      setIsDisabled(true);
-    } else if (type === "disable") {
-      setIsDisabled(false);
-    }
-  };
+    console.log("statusFlag", statusFlag);
 
+    try {
+      setStatusFlag(true);
+      if (type === "panel") {
+        await updatePanel({
+          id: itemId,
+          data: { bIsEnabled: true },
+        }).unwrap();
+        alert("Panel Updated");
+        fetch();
+        return;
+      } else if (type === "stocks") {
+        await updateStock({
+          id: itemId,
+          data: { bIsEnabled: true },
+        }).unwrap();
+        alert("Stock Sheet Updated");
+        fetch();
+        return;
+      } else {
+        alert("Provide proper type");
+        return;
+      }
+    } catch (error) {}
+  };
+  const handleUpdateStatusToDisabled = async (itemId: string) => {
+    console.log("itemId", itemId);
+    console.log("type", type);
+
+    try {
+      setStatusFlag(false);
+      if (type === "panel") {
+        await updatePanel({
+          id: itemId,
+          data: { bIsEnabled: false },
+        }).unwrap();
+        alert("Panel Updated");
+        fetch();
+        return;
+      } else if (type === "stocks") {
+        await updateStock({
+          id: itemId,
+          data: { bIsEnabled: false },
+        }).unwrap();
+        alert("Stock Sheet Updated");
+        fetch();
+        return;
+      } else {
+        alert("Provide proper type");
+        return;
+      }
+    } catch (error) {}
+  };
   // console.log("tableData", tableData);
   return (
     <Table
@@ -134,9 +184,7 @@ const CustomTable = ({
                     className="cursor-pointer"
                     color="green"
                     size={15}
-                    onClick={() =>
-                      handleToggleLayoutNumber(item?.id, "disable")
-                    }
+                    onClick={() => handleUpdateStatusToDisabled(item?.id)}
                   />
                 </>
               ) : (
@@ -145,7 +193,7 @@ const CustomTable = ({
                     className="cursor-pointer"
                     color="green"
                     size={15}
-                    onClick={() => handleToggleLayoutNumber(item?.id, "enable")}
+                    onClick={() => handleUpdateStatusToEnabled(item?.id)}
                   />
                 </>
               )}

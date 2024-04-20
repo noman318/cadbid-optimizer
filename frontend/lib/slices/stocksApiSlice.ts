@@ -35,6 +35,13 @@ export const stocksApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    updateStock: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `${STOCK_SHEETS_URL}/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -44,4 +51,5 @@ export const {
   useGetAllStockSheetsQuery,
   useGetSingleSheetQuery,
   useDeleteStockMutation,
+  useUpdateStockMutation,
 } = stocksApiSlice;
