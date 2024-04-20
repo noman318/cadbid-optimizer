@@ -17,8 +17,16 @@ const getAllPanels = async (
 ) => {
   try {
     const panels = await prisma.mPanel.findMany({});
-    // console.log("panels", panels);
-    return res.json(panels);
+    const modifiedPanels = panels.map((panel) => ({
+      id: panel.sPanelID,
+      sName: panel.sName,
+      sMaterialName: panel.sMaterialName,
+      nLength: panel.nLength,
+      nWidth: panel.nWidth,
+      nQty: panel.nQty,
+      bIsEnabled: panel.bIsEnabled,
+    }));
+    return res.json(modifiedPanels);
   } catch (error) {
     console.log("error", error);
     next(error);
@@ -50,7 +58,7 @@ const getSinglePanel = async (
 const createPanel = async (req: Request, res: Response, next: NextFunction) => {
   // console.log("calling Create");
   console.log("req.body", req.body);
-  const { nLength, nWidth, nQty, sName, sMaterialName } = req.body;
+  const { nLength, nWidth, nQty, sName, sMaterialName, bIsEnabled } = req.body;
   try {
     // Create the stock sheet
     const panel = await prisma.mPanel.create({
@@ -60,6 +68,7 @@ const createPanel = async (req: Request, res: Response, next: NextFunction) => {
         nWidth,
         nQty,
         sMaterialName,
+        bIsEnabled: true,
       },
     });
     // console.log("stockSheet", stockSheet);
@@ -80,6 +89,36 @@ const createPanel = async (req: Request, res: Response, next: NextFunction) => {
     res.json({ data: panel });
   } catch (error) {
     console.log("error", error);
+    next(error);
+  }
+};
+
+const updatePanel = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  console.log("id", id);
+  const { nLength, nWidth, nQty, sName, bIsEnabled } = req.body;
+
+  try {
+    const panel = await prisma.mPanel.findUnique({
+      where: { sPanelID: id },
+    });
+    // console.log("panel", panel);
+    if (!panel) {
+      throw new Error("No Panel with this ID found");
+    } else {
+      await prisma.mPanel.update({
+        where: { sPanelID: id },
+        data: {
+          sName,
+          nLength,
+          nWidth,
+          nQty,
+          bIsEnabled: bIsEnabled ?? true,
+        },
+      });
+      return res.json({ message: "Updated Successfully" });
+    }
+  } catch (error) {
     next(error);
   }
 };
@@ -141,4 +180,5 @@ export default {
   getAllPanels,
   getSinglePanel,
   deletePanel,
+  updatePanel,
 };

@@ -14,6 +14,7 @@ model mPanel {
   nLength  Int    @default(0)
   nWidth   Int    @default(0)
   nQty     Int    @default(0)
+  bIsEnabled  Boolean?
 }
 
 model mUserNew {
@@ -50,6 +51,7 @@ model mStockSheets {
   nLength  Int    @default(0)
   nWidth   Int    @default(0)
   nQty     Int    @default(0)
+  bIsEnabled  Boolean?
 }
 
 model memailuser {

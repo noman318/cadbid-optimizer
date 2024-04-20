@@ -17,7 +17,15 @@ const getAllStockSheets = async (
 ) => {
   try {
     const stockSheets = await prisma.mStockSheets.findMany({});
-    return res.json(stockSheets);
+    const modifiedStockSheets = stockSheets?.map((stock) => ({
+      id: stock.sStockID,
+      sName: stock.sName,
+      nLength: stock.nLength,
+      nWidth: stock.nWidth,
+      nQty: stock.nQty,
+      bIsEnabled: stock.bIsEnabled,
+    }));
+    return res.json(modifiedStockSheets);
   } catch (error) {
     console.log("error", error);
     next(error);
@@ -51,7 +59,7 @@ const createStocksSheets = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { nLength, nWidth, nQty, sName } = req.body;
+  const { nLength, nWidth, nQty, sName, bIsEnabled } = req.body;
   try {
     const stockSheet = await prisma.mStockSheets.create({
       data: {
@@ -59,11 +67,46 @@ const createStocksSheets = async (
         nLength,
         nWidth,
         nQty,
+        bIsEnabled: true,
       },
     });
     res.json(stockSheet);
   } catch (error) {
     console.log("error", error);
+    next(error);
+  }
+};
+
+const updateStockSheet = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  console.log("id", id);
+  const { nLength, nWidth, nQty, sName, bIsEnabled } = req.body;
+
+  try {
+    const stockSheet = await prisma.mStockSheets.findUnique({
+      where: { sStockID: id },
+    });
+    // console.log("stockSheet", stockSheet);
+    if (!stockSheet) {
+      throw new Error("No Stock Sheet with this ID found");
+    } else {
+      await prisma.mStockSheets.update({
+        where: { sStockID: id },
+        data: {
+          sName,
+          nLength,
+          nWidth,
+          nQty,
+          bIsEnabled: bIsEnabled ?? true,
+        },
+      });
+      return res.json({ message: "Updated Successfully" });
+    }
+  } catch (error) {
     next(error);
   }
 };
@@ -131,4 +174,5 @@ export default {
   getAllStockSheets,
   getSingleStockData,
   deleteStockSheet,
+  updateStockSheet,
 };

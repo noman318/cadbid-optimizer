@@ -76,4 +76,7 @@
   .hide-scrollbar::-webkit-scrollbar {
     @apply hidden;
   }
+  .overflowing {
+    @apply whitespace-nowrap overflow-hidden text-ellipsis;
+  }
 }

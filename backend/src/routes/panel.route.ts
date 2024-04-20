@@ -13,5 +13,6 @@ router.route("/upload").post(upload.single("file"), PanelController.uploadCsv);
 router
   .route("/:id")
   .get(PanelController.getSinglePanel)
+  .put(PanelController.updatePanel)
   .delete(PanelController.deletePanel);
 export default router;

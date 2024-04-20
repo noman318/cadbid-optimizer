@@ -1,23 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button } from "./ui/button";
-import { FaPlay, FaDownload } from "react-icons/fa";
-import { IoSettingsSharp } from "react-icons/io5";
-import { MdDashboard } from "react-icons/md";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -28,11 +18,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useCreateSettingMutation } from "@/lib/slices/settingSlice";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { IoSettingsSharp } from "react-icons/io5";
+import { z } from "zod";
+import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
-import {
-  useCreateSettingMutation,
-  useGetSingleSettingsQuery,
-} from "@/lib/slices/settingSlice";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 const formSchema = z.object({

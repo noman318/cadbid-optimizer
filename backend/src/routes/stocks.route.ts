@@ -16,6 +16,7 @@ router
 router
   .route("/:id")
   .get(StockSheetController.getSingleStockData)
-  .delete(StockSheetController.deleteStockSheet);
+  .delete(StockSheetController.deleteStockSheet)
+  .put(StockSheetController.updateStockSheet);
 
 export default router;
