@@ -64,7 +64,6 @@ const CustomTable = ({
   // console.log("tableHead", tableHead);
   const newTableHead = tableHead && tableHead?.slice(0, -1);
   // console.log("newTableHead", newTableHead);
-  console.log("tableData", tableData);
 
   const [statusFlag, setStatusFlag] = useState(false);
   const [deletePanel] = useDeletePanelMutation();
@@ -90,7 +89,46 @@ const CustomTable = ({
         };
       }, {}),
   });
+  const defaultFormData =
+    tableData?.reduce((acc, item) => {
+      return {
+        ...acc,
+        [`sName_${item?.id}`]: item?.sName || "",
+        [`nLength_${item?.id}`]:
+          typeof item?.nLength === "number" ? String(item?.nLength) : "",
+        [`nWidth_${item?.id}`]:
+          typeof item?.nWidth === "number" ? String(item?.nWidth) : "",
+        [`nQty_${item?.id}`]:
+          typeof item?.nQty === "number" ? String(item?.nQty) : "",
+        [`sMaterialName_${item?.id}`]: item?.sMaterialName || "",
+      };
+    }, {}) || {};
+  // console.log("formData", formData);
+  const [formData, setFormData] = useState(defaultFormData);
+  const handleInputChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    itemId: string
+  ) => {
+    console.log("itemId", itemId);
+    const { name, value } = event.target;
+    form.setValue(name as FieldName, value);
+    console.log("name", name);
+    const strName = name.split("_");
+    const newArray = strName.slice(0, -1);
 
+    // Convert the modified array back to a string
+    const resultString = newArray.join(",");
+
+    console.log("resultString", resultString);
+    try {
+      await updatePanel({
+        id: itemId,
+        data: { [resultString]: value },
+      }).unwrap();
+    } catch (error) {
+      console.log("Error updating panel:", error);
+    }
+  };
   type FieldName =
     | "nLength"
     | "nWidth"
@@ -134,32 +172,6 @@ const CustomTable = ({
     return char;
   };
 
-  const handleChange = async (
-    field: FieldName,
-    value: any,
-    updatePanel: (data: { id: string; data: any }) => Promise<any>
-  ) => {
-    console.log("value", value);
-    console.log("field", field);
-    try {
-      // Extract item id from field name
-      const itemId = field.split("_")[1];
-      await updatePanel({ id: itemId, data: { [field]: value } });
-    } catch (error) {
-      console.log("Error updating panel:", error);
-    }
-  };
-
-  const handleFieldChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    field: FieldName,
-    setValue: UseFormSetValue<FieldValues>,
-    updatePanel: (data: { id: string; data: any }) => Promise<any>
-  ) => {
-    const { value } = event.target;
-    setValue(field, value);
-    handleChange(field, value, updatePanel);
-  };
   const handleUpdateStatusToEnabled = async (itemId: string) => {
     console.log("itemId", itemId);
     console.log("type", type);
@@ -250,14 +262,8 @@ const CustomTable = ({
                       <Input
                         placeholder="Name"
                         {...field}
-                        onChange={(event) =>
-                          handleFieldChange(
-                            event,
-                            `sName_${item?.id}` as FieldName,
-                            form.setValue as unknown as UseFormSetValue<FieldValues>,
-                            updatePanel
-                          )
-                        }
+                        // onChange={handleInputChange(item.id)}
+                        onChange={(event) => handleInputChange(event, item.id)} // Pass a function reference here
                       />
                     </FormControl>
                   )}
