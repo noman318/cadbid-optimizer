@@ -8,7 +8,7 @@ const StockTable = () => {
   const { data: stockData, isLoading, refetch } = useGetAllStockSheetsQuery({});
   // console.log("stockData", stockData);
   // const stockHead = stockData && Object?.keys(stockData?.[0]);
-  const stockHead = stockData?.[0] && Object.keys(stockData[0]);
+  const stockHead = stockData && stockData?.[0] && Object.keys(stockData[0]);
 
   stockHead?.shift();
   return (
@@ -19,7 +19,7 @@ const StockTable = () => {
         </>
       ) : (
         <>
-          {stockData && (
+          {stockData && stockData.length >= 1 && (
             <CustomTable
               tableHead={stockHead}
               tableData={stockData}
