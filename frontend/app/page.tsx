@@ -9,9 +9,9 @@ export default function Home() {
     <main className="flex min-h-screen w-[60rem] md:w-[40rem]  p-8 flex-col gap-2 border-r-2 border-solid border-black">
       {/* <AddForm /> */}
       {/* <AddForm title="Panels" icon={<TfiLayoutSliderAlt />} type="panel" /> */}
-      <PanelTable title="Panels" icon={<TfiLayoutSliderAlt />} />
+      <PanelTable title="Panels" icon={<TfiLayoutSliderAlt />} type="panel" />
       {/* <AddForm title="Stock Sheets" icon={<BsStack />} type="stock" /> */}
-      <StockTable title="Stock Sheets" icon={<BsStack />} />
+      <StockTable title="Stock Sheets" icon={<BsStack />} type="stocks" />
     </main>
   );
 }

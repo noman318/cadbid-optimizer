@@ -155,6 +155,7 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
               nWidth: +response[i].width,
               nQty: +response[i].qty,
               sName: response[i].name,
+              bIsEnabled: true,
             });
           }
           await prisma.mStockSheets.createMany({ data: stockSheetData });

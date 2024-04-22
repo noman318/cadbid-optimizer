@@ -165,6 +165,7 @@ const uploadCsv = async (req: Request, res: Response, next: NextFunction) => {
               nQty: +response[i].qty,
               sName: response[i].name,
               sMaterialName: response[i].material,
+              bIsEnabled: true,
             });
           }
           await prisma.mPanel.createMany({ data: panelData });
