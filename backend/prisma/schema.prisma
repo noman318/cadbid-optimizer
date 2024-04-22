@@ -8,13 +8,21 @@ datasource db {
 }
 
 model mPanel {
-  sPanelID String @id @default(uuid())
-  sName    String @default("")
-  sMaterialName    String @default("")
-  nLength  Int    @default(0)
-  nWidth   Int    @default(0)
-  nQty     Int    @default(0)
-  bIsEnabled  Boolean?
+  sPanelID      String   @id @default(uuid())
+  sName         String   @default("")
+  sMaterialName String   @default("")
+  nLength       Int      @default(0)
+  nWidth        Int      @default(0)
+  nQty          Int      @default(0)
+  nEdge1        Int?     @default(0)
+  nEdge2        Int?     @default(0)
+  nEdge3        Int?     @default(0)
+  nEdge4        Int?     @default(0)
+  nRotation     Int?     @default(0) @db.TinyInt
+  sRemarks      String?  @default("")
+  sLabel1       String?  @default("")
+  sLabel2       String?  @default("")
+  bIsEnabled    Boolean?
 }
 
 model mUserNew {
@@ -46,12 +54,12 @@ model mSettings {
 }
 
 model mStockSheets {
-  sStockID String @id @default(uuid())
-  sName    String @default("")
-  nLength  Int    @default(0)
-  nWidth   Int    @default(0)
-  nQty     Int    @default(0)
-  bIsEnabled  Boolean?
+  sStockID   String   @id @default(uuid())
+  sName      String   @default("")
+  nLength    Int      @default(0)
+  nWidth     Int      @default(0)
+  nQty       Int      @default(0)
+  bIsEnabled Boolean?
 }
 
 model memailuser {

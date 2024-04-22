@@ -64,6 +64,7 @@ const CustomTable = ({
   // console.log("newTableHead", newTableHead);
 
   const [statusFlag, setStatusFlag] = useState(false);
+  const [considerEdge, setConsiderEdge] = useState(false);
   const [deletePanel] = useDeletePanelMutation();
   const [deleteStock] = useDeleteStockMutation();
   const [updatePanel] = useUpdatePanelMutation();
