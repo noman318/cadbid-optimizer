@@ -1,63 +1,111 @@
 "use client";
+import { Form, FormControl, FormField } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { TableCell, TableRow } from "@/components/ui/table";
 import {
+  useCreatePanelMutation,
   useGetAllPanelsQuery,
-  useUploadPanelCsvMutation,
 } from "@/lib/slices/panelsApiSlice";
-import React, { useRef, useState } from "react";
+import { useCreateStockMutation } from "@/lib/slices/stocksApiSlice";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { MouseEventHandler } from "react";
+import { useForm } from "react-hook-form";
+import { FaSave } from "react-icons/fa";
+import { z } from "zod";
+import CustomFileDropDown from "./CustomFileDropDown";
 import CustomTable from "./CustomTable";
 import Loader from "./Loader";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { IoMenu } from "react-icons/io5";
+import { Button } from "./ui/button";
 type Props = {
   title: string;
   icon: React.ReactElement<React.SVGProps<SVGSVGElement>>;
   type: string;
 };
+const formSchema = z.object({
+  nLength: z.string().min(2).max(50),
+  nWidth: z.string().min(2).max(50),
+  nQty: z.string().min(1).max(50),
+  sName: z.string(),
+  sMaterialName: z.string(),
+  // panelLength: z.string().min(1).max(50),
+  // panelWidth: z.string().min(1).max(50),
+  // panelQty: z.string().min(1).max(50),
+  file_input: z.string(),
+});
+
+type FieldName =
+  | "nLength"
+  | "nWidth"
+  | "nQty"
+  | "sName"
+  | "sMaterialName"
+  | "file_input";
 const PanelTable = ({ title, icon, type }: Props) => {
   const { data, isLoading, refetch } = useGetAllPanelsQuery({});
   // console.log("data", data.slice(0, 2));
-  const [files, setFiles] = useState<File | null>(null);
-  const [uploadPanelCSV, { isLoading: panelCsvLoading }] =
-    useUploadPanelCsvMutation();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [createPanel] = useCreatePanelMutation();
+  const [createStock] = useCreateStockMutation();
 
   const panelHead = data && data?.[0] && Object?.keys(data?.[0]);
   panelHead?.shift();
   // console.log("data", data);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      nLength: "",
+      nWidth: "",
+      nQty: "",
+      sName: "",
+      sMaterialName: "",
+      file_input: "",
+    },
+  });
 
-  const handleImportFromCSV = () => {
-    fileInputRef?.current?.click();
-  };
-
-  // console.log("filesOutFunction", files);
-
-  const handleUploadStockCSV = async (e: any) => {
-    e?.preventDefault();
+  const onSubmit: MouseEventHandler<HTMLButtonElement> = async (event: any) => {
+    event.preventDefault();
+    console.log(`clicked`);
     console.log("type", type);
-    const selectedFile = e.target.files?.[0] || null;
-    setFiles(selectedFile);
-    // console.log("selectedFile", selectedFile);
+
+    const values: any = form.getValues();
+
+    const newData: { [key: string]: string | number } = {};
+
+    Object.keys(values).forEach((key) => {
+      if (key === "sName" || key === "sMaterialName") {
+        newData[key] = values[key] as string;
+      } else {
+        newData[key] = Number(values[key]);
+      }
+    });
+
     try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
       if (type === "panel") {
-        await uploadPanelCSV(formData).unwrap();
-        alert("Uploaded Panel CSV");
+        await createPanel(newData).unwrap();
+        alert("created panel");
+        form.reset({
+          nLength: "",
+          nWidth: "",
+          nQty: "",
+          sName: "",
+          sMaterialName: "",
+        });
         refetch();
-        return;
+      } else if (type === "stocks") {
+        await createStock(newData).unwrap();
+        alert("created stocks");
+        form.reset({
+          nLength: "",
+          nWidth: "",
+          nQty: "",
+          sName: "",
+          sMaterialName: "",
+        });
+        refetch();
       } else {
         alert("Provide Proper Type");
       }
     } catch (error) {
-      console.error("Error uploading CSV:", error);
-      alert("Failed to upload CSV");
+      console.log("error", error);
     }
   };
   return (
@@ -67,24 +115,7 @@ const PanelTable = ({ title, icon, type }: Props) => {
           {icon}
           {title}
         </h1>
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <IoMenu size={30} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={handleImportFromCSV}>
-              Import From CSV
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <form style={{ display: "none" }}>
-          <input
-            type="file"
-            accept=".csv"
-            ref={fileInputRef}
-            onChange={handleUploadStockCSV}
-          />
-        </form>
+        <CustomFileDropDown type={"panel"} fetch={refetch} />
       </div>
       {isLoading ? (
         <>
@@ -92,13 +123,101 @@ const PanelTable = ({ title, icon, type }: Props) => {
         </>
       ) : (
         <div aria-label="parent_table">
-          {data && data.length >= 1 && (
+          {data && data.length >= 1 ? (
             <CustomTable
               tableHead={panelHead}
               tableData={data}
               type={"panel"}
               fetch={refetch}
             />
+          ) : (
+            <TableRow>
+              <Form {...form}>
+                <TableCell className="overflowing font-medium capitalize text-ellipsis">
+                  <FormField
+                    control={form.control}
+                    name={`sName` as FieldName}
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder="Name"
+                          {...field}
+                          // onChange={handleInputChange(item.id)}
+                          // onChange={(event) => handleInputChange(event, item.id)}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                </TableCell>
+                {type === "panel" && (
+                  <TableCell className="font-medium capitalize text-ellipsis overflowing">
+                    <FormField
+                      control={form.control}
+                      name={`sMaterialName` as FieldName}
+                      render={({ field }) => (
+                        <FormControl>
+                          <Input
+                            placeholder="Name"
+                            {...field}
+                            // onChange={(event) => handleInputChange(event, item.id)}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                  </TableCell>
+                )}
+                <TableCell>
+                  <FormField
+                    control={form.control}
+                    name={`nLength` as FieldName}
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder="Quantity"
+                          {...field}
+                          // onChange={(event) => handleInputChange(event, item.id)}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                </TableCell>
+                <TableCell>
+                  <FormField
+                    control={form.control}
+                    name={`nWidth` as FieldName}
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder="Quantity"
+                          {...field}
+                          // onChange={(event) => handleInputChange(event, item.id)}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                </TableCell>
+                <TableCell>
+                  <FormField
+                    control={form.control}
+                    name={`nQty` as FieldName}
+                    render={({ field }) => (
+                      <FormControl>
+                        <Input
+                          placeholder="Quantity"
+                          {...field}
+                          // onChange={(event) => handleInputChange(event, item.id)}
+                        />
+                      </FormControl>
+                    )}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Button onClick={onSubmit}>
+                    <FaSave />
+                  </Button>
+                </TableCell>
+              </Form>
+            </TableRow>
           )}
         </div>
       )}
