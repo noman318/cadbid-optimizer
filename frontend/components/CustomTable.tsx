@@ -6,28 +6,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import React, { useEffect, useState } from "react";
+import React, { MouseEventHandler, useState } from "react";
 
+import { Form, FormControl, FormField } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
+  useCreatePanelMutation,
   useDeletePanelMutation,
   useUpdatePanelMutation,
 } from "@/lib/slices/panelsApiSlice";
 import {
+  useCreateStockMutation,
   useDeleteStockMutation,
   useUpdateStockMutation,
 } from "@/lib/slices/stocksApiSlice";
-import { FaCheck, FaRegSquare } from "react-icons/fa";
-import { ImCross } from "react-icons/im";
-import { Form, FormControl, FormField } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  useForm,
-  FieldName,
-  FieldValues,
-  UseFormSetValue,
-} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { FaCheck, FaRegSquare, FaSave } from "react-icons/fa";
+import { ImCross } from "react-icons/im";
 import { z } from "zod";
+import { Button } from "./ui/button";
 
 interface Item {
   id: string;
@@ -70,6 +68,8 @@ const CustomTable = ({
   const [deleteStock] = useDeleteStockMutation();
   const [updatePanel] = useUpdatePanelMutation();
   const [updateStock] = useUpdateStockMutation();
+  const [createPanel] = useCreatePanelMutation();
+  const [createStock] = useCreateStockMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -267,10 +267,58 @@ const CustomTable = ({
     } catch (error) {}
   };
   // console.log("tableData", tableData);
+
+  const onSubmit: MouseEventHandler<HTMLButtonElement> = async (event: any) => {
+    event.preventDefault();
+    console.log(`clicked`);
+    console.log("type", type);
+
+    const values: any = form.getValues();
+
+    const newData: { [key: string]: string | number } = {};
+
+    Object.keys(values).forEach((key) => {
+      if (key === "sName" || key === "sMaterialName") {
+        newData[key] = values[key] as string;
+      } else {
+        newData[key] = Number(values[key]);
+      }
+    });
+
+    try {
+      if (type === "panel") {
+        await createPanel(newData).unwrap();
+        alert("created panel");
+        form.reset({
+          nLength: "",
+          nWidth: "",
+          nQty: "",
+          sName: "",
+          sMaterialName: "",
+        });
+        fetch();
+      } else if (type === "stocks") {
+        await createStock(newData).unwrap();
+        alert("created stocks");
+        form.reset({
+          nLength: "",
+          nWidth: "",
+          nQty: "",
+          sName: "",
+          sMaterialName: "",
+        });
+        fetch();
+      } else {
+        alert("Provide Proper Type");
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
   return (
     <Table
       aria-label="table_body"
-      className=" overflow-x-hidden overflow-y-hidden hide-scrollbar -z-0"
+      className=" overflow-x-hidden overflow-y-hidden hide-scrollbar -z-0 border-b-2 mb-1"
     >
       {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
       <TableHeader className=" font-bold">
@@ -403,6 +451,93 @@ const CustomTable = ({
             </Form>
           </TableRow>
         ))}
+        <TableRow>
+          <Form {...form}>
+            <TableCell className="overflowing font-medium capitalize text-ellipsis">
+              <FormField
+                control={form.control}
+                name={`sName` as FieldName}
+                render={({ field }) => (
+                  <FormControl>
+                    <Input
+                      placeholder="Name"
+                      {...field}
+                      // onChange={handleInputChange(item.id)}
+                      // onChange={(event) => handleInputChange(event, item.id)}
+                    />
+                  </FormControl>
+                )}
+              />
+            </TableCell>
+            {type === "panel" && (
+              <TableCell className="font-medium capitalize text-ellipsis overflowing">
+                <FormField
+                  control={form.control}
+                  name={`sMaterialName` as FieldName}
+                  render={({ field }) => (
+                    <FormControl>
+                      <Input
+                        placeholder="Name"
+                        {...field}
+                        // onChange={(event) => handleInputChange(event, item.id)}
+                      />
+                    </FormControl>
+                  )}
+                />
+              </TableCell>
+            )}
+            <TableCell>
+              <FormField
+                control={form.control}
+                name={`nLength` as FieldName}
+                render={({ field }) => (
+                  <FormControl>
+                    <Input
+                      placeholder="Quantity"
+                      {...field}
+                      // onChange={(event) => handleInputChange(event, item.id)}
+                    />
+                  </FormControl>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={form.control}
+                name={`nWidth` as FieldName}
+                render={({ field }) => (
+                  <FormControl>
+                    <Input
+                      placeholder="Quantity"
+                      {...field}
+                      // onChange={(event) => handleInputChange(event, item.id)}
+                    />
+                  </FormControl>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <FormField
+                control={form.control}
+                name={`nQty` as FieldName}
+                render={({ field }) => (
+                  <FormControl>
+                    <Input
+                      placeholder="Quantity"
+                      {...field}
+                      // onChange={(event) => handleInputChange(event, item.id)}
+                    />
+                  </FormControl>
+                )}
+              />
+            </TableCell>
+            <TableCell>
+              <Button onClick={onSubmit}>
+                <FaSave />
+              </Button>
+            </TableCell>
+          </Form>
+        </TableRow>
       </TableBody>
       {/* <TableFooter>
         <TableRow>

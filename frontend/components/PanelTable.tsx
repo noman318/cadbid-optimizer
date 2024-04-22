@@ -3,8 +3,11 @@ import { useGetAllPanelsQuery } from "@/lib/slices/panelsApiSlice";
 import React from "react";
 import CustomTable from "./CustomTable";
 import Loader from "./Loader";
-
-const PanelTable = () => {
+type Props = {
+  title: string;
+  icon: React.ReactElement<React.SVGProps<SVGSVGElement>>;
+};
+const PanelTable = ({ title, icon }: Props) => {
   const { data, isLoading, refetch } = useGetAllPanelsQuery({});
   // console.log("data", data.slice(0, 2));
   const panelHead = data && data?.[0] && Object?.keys(data?.[0]);
@@ -12,6 +15,10 @@ const PanelTable = () => {
   // console.log("data", data);
   return (
     <React.Fragment>
+      <h1 className="text-xl font-bold flex items-center gap-2 mb-1">
+        {icon}
+        {title}
+      </h1>
       {isLoading ? (
         <>
           <Loader />

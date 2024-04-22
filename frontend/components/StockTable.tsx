@@ -4,7 +4,11 @@ import CustomTable from "./CustomTable";
 import { useGetAllStockSheetsQuery } from "@/lib/slices/stocksApiSlice";
 import Loader from "./Loader";
 
-const StockTable = () => {
+type Props = {
+  title: string;
+  icon: React.ReactElement<React.SVGProps<SVGSVGElement>>;
+};
+const StockTable = ({ title, icon }: Props) => {
   const { data: stockData, isLoading, refetch } = useGetAllStockSheetsQuery({});
   // console.log("stockData", stockData);
   // const stockHead = stockData && Object?.keys(stockData?.[0]);
@@ -13,6 +17,10 @@ const StockTable = () => {
   stockHead?.shift();
   return (
     <React.Fragment>
+      <h1 className="text-xl font-bold flex items-center gap-2 mb-1">
+        {icon}
+        {title}
+      </h1>
       {isLoading ? (
         <>
           <Loader />

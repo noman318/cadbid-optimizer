@@ -56,8 +56,7 @@ const getSinglePanel = async (
 // Create a panel POST REQUEST
 
 const createPanel = async (req: Request, res: Response, next: NextFunction) => {
-  // console.log("calling Create");
-  console.log("req.body", req.body);
+  // console.log("req.body", req.body);
   const { nLength, nWidth, nQty, sName, sMaterialName, bIsEnabled } = req.body;
   try {
     // Create the stock sheet
