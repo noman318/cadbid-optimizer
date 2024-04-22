@@ -95,8 +95,9 @@ const createPanel = async (req: Request, res: Response, next: NextFunction) => {
 
 const updatePanel = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
-  console.log("id", id);
-  const { nLength, nWidth, nQty, sName, bIsEnabled } = req.body;
+  // console.log("id", id);
+  // console.log("req.body", req.body);
+  const { nLength, nWidth, nQty, sName, bIsEnabled, sMaterialName } = req.body;
 
   try {
     const panel = await prisma.mPanel.findUnique({
@@ -105,19 +106,23 @@ const updatePanel = async (req: Request, res: Response, next: NextFunction) => {
     // console.log("panel", panel);
     if (!panel) {
       throw new Error("No Panel with this ID found");
-    } else {
-      await prisma.mPanel.update({
-        where: { sPanelID: id },
-        data: {
-          sName,
-          nLength,
-          nWidth,
-          nQty,
-          bIsEnabled: bIsEnabled ?? true,
-        },
-      });
-      return res.json({ message: "Updated Successfully" });
     }
+
+    const updateData = {
+      sName: sName || panel.sName,
+      nLength: isNaN(+nLength) ? panel.nLength : +nLength,
+      nWidth: isNaN(+nWidth) ? panel.nWidth : +nWidth,
+      nQty: isNaN(+nQty) ? panel.nQty : +nQty,
+      sMaterialName: sMaterialName || panel.sMaterialName,
+      bIsEnabled: bIsEnabled !== undefined ? bIsEnabled : panel.bIsEnabled,
+    };
+
+    await prisma.mPanel.update({
+      where: { sPanelID: id },
+      data: updateData,
+    });
+
+    return res.json({ message: "Updated Successfully" });
   } catch (error) {
     next(error);
   }

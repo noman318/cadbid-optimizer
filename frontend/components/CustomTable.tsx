@@ -105,10 +105,30 @@ const CustomTable = ({
     }, {}) || {};
   // console.log("formData", formData);
   const [formData, setFormData] = useState(defaultFormData);
+
+  function debounce(func: (...args: any[]) => any, delay: number) {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    return (...args: any[]) => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      timeoutId = setTimeout(() => {
+        func(...args);
+      }, delay);
+    };
+  }
+
+  const debouncedUpdatePanel = debounce(updatePanel, 2000);
+  const debouncedUpdateStock = debounce(updateStock, 2000);
+
   const handleInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
     itemId: string
   ) => {
+    console.log("type", type);
+
     console.log("itemId", itemId);
     const { name, value } = event.target;
     form.setValue(name as FieldName, value);
@@ -120,11 +140,28 @@ const CustomTable = ({
     const resultString = newArray.join(",");
 
     console.log("resultString", resultString);
+    // return
     try {
-      await updatePanel({
-        id: itemId,
-        data: { [resultString]: value },
-      }).unwrap();
+      // await updatePanel({
+      //   id: itemId,
+      //   data: { [resultString]: value },
+      // }).unwrap();
+      if (type === "panel") {
+        debouncedUpdatePanel({
+          id: itemId,
+          data: { [resultString]: value },
+        });
+        return;
+      } else if (type === "stocks") {
+        debouncedUpdateStock({
+          id: itemId,
+          data: { [resultString]: value },
+        });
+        return;
+      } else {
+        alert("Provide proper type");
+        return;
+      }
     } catch (error) {
       console.log("Error updating panel:", error);
     }
@@ -263,7 +300,7 @@ const CustomTable = ({
                         placeholder="Name"
                         {...field}
                         // onChange={handleInputChange(item.id)}
-                        onChange={(event) => handleInputChange(event, item.id)} // Pass a function reference here
+                        onChange={(event) => handleInputChange(event, item.id)}
                       />
                     </FormControl>
                   )}
@@ -277,7 +314,13 @@ const CustomTable = ({
                     defaultValue={item?.sMaterialName}
                     render={({ field }) => (
                       <FormControl>
-                        <Input placeholder="Name" {...field} />
+                        <Input
+                          placeholder="Name"
+                          {...field}
+                          onChange={(event) =>
+                            handleInputChange(event, item.id)
+                          }
+                        />
                       </FormControl>
                     )}
                   />
@@ -290,7 +333,11 @@ const CustomTable = ({
                   defaultValue={`${item?.nLength}`}
                   render={({ field }) => (
                     <FormControl>
-                      <Input placeholder="Quantity" {...field} />
+                      <Input
+                        placeholder="Quantity"
+                        {...field}
+                        onChange={(event) => handleInputChange(event, item.id)}
+                      />
                     </FormControl>
                   )}
                 />
@@ -302,7 +349,11 @@ const CustomTable = ({
                   defaultValue={`${item?.nWidth}`}
                   render={({ field }) => (
                     <FormControl>
-                      <Input placeholder="Quantity" {...field} />
+                      <Input
+                        placeholder="Quantity"
+                        {...field}
+                        onChange={(event) => handleInputChange(event, item.id)}
+                      />
                     </FormControl>
                   )}
                 />
@@ -314,7 +365,11 @@ const CustomTable = ({
                   defaultValue={`${item?.nQty}`}
                   render={({ field }) => (
                     <FormControl>
-                      <Input placeholder="Quantity" {...field} />
+                      <Input
+                        placeholder="Quantity"
+                        {...field}
+                        onChange={(event) => handleInputChange(event, item.id)}
+                      />
                     </FormControl>
                   )}
                 />
